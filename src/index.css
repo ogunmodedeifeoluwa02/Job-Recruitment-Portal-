@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+@theme {
+  /* This creates the utility class: font-poppins */
+  --font-fraunces: "Fraunces", sans-serif;
+
+  /* OR override the default sans font for the entire project */
+  --font-jakarta: "Plus Jakarta Sans", sans-serif;
+}
+
 * {
   box-sizing: border-box;
 }
