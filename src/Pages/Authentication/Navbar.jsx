@@ -8,7 +8,7 @@ function Navbar() {
         <div className="flex items-center gap-1">
           <div className="flex items-center gap-1 font-fraunces text-lg">
             <img
-              src="src/assets/logo.svg"
+              src="src/assests/logo.svg"
               alt="TalentDesk Logo"
               className="h-10 w-10 object-contain"
             />
