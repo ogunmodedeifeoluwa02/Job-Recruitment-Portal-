@@ -1,0 +1,189 @@
+.create-job {
+  min-height: 100vh;
+  background: #111215;
+}
+
+.create-job nav {
+  background: #17181C;
+  border-bottom: 1px solid #23252C;
+}
+
+.create-job .nav-content {
+  max-width: 7xl;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+@media (min-width: 640px) {
+  .create-job .nav-content {
+    padding: 0 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .create-job .nav-content {
+    padding: 0 2rem;
+  }
+}
+
+.create-job .nav-header {
+  display: flex;
+  justify-content: space-between;
+  height: 4rem;
+}
+
+.create-job .nav-brand {
+  display: flex;
+  align-items: center;
+}
+
+.create-job .nav-brand a {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #FFFFFF;
+  text-decoration: none;
+}
+
+.create-job .nav-links {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.create-job .nav-link {
+  color: #8A8D9B;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.create-job .nav-link:hover {
+  color: #E05628;
+}
+
+.create-job .nav-link.active {
+  color: #E05628;
+}
+
+.create-job .content {
+  max-width: 7xl;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+@media (min-width: 640px) {
+  .create-job .content {
+    padding: 2rem 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .create-job .content {
+    padding: 2rem 2rem;
+  }
+}
+
+.create-job .back-link {
+  margin-bottom: 1.5rem;
+  color: #E05628;
+  text-decoration: none;
+}
+
+.create-job .back-link:hover {
+  color: #c94a22;
+}
+
+.create-job .form-card {
+  background: #17181C;
+  border: 1px solid #23252C;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+}
+
+.create-job h2 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #FFFFFF;
+  margin-bottom: 1.5rem;
+}
+
+.create-job .form-group {
+  margin-bottom: 1.5rem;
+}
+
+.create-job label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #8A8D9B;
+  margin-bottom: 0.5rem;
+}
+
+.create-job input,
+.create-job select,
+.create-job textarea {
+  width: 100%;
+  padding: 0.5rem 1rem;
+  border: 1px solid #23252C;
+  background: #111215;
+  color: #FFFFFF;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+}
+
+.create-job input:focus,
+.create-job select:focus,
+.create-job textarea:focus {
+  outline: none;
+  border-color: #E05628;
+  box-shadow: 0 0 0 2px rgba(224, 86, 40, 0.2);
+}
+
+.create-job .form-row {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .create-job .form-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.create-job .button-group {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.create-job button {
+  padding: 0.5rem 1.5rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.create-job .button-secondary {
+  background: #17181C;
+  color: #8A8D9B;
+  border: 1px solid #23252C;
+}
+
+.create-job .button-secondary:hover {
+  background: #23252C;
+}
+
+.create-job .button-primary {
+  background: #E05628;
+  color: white;
+  border: none;
+}
+
+.create-job .button-primary:hover {
+  background: #c94a22;
+}

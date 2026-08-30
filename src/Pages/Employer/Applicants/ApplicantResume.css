@@ -1,0 +1,206 @@
+.applicant-resume {
+  min-height: 100vh;
+  background: #111215;
+}
+
+.applicant-resume nav {
+  background: #17181C;
+  border-bottom: 1px solid #23252C;
+}
+
+.applicant-resume .nav-content {
+  max-width: 7xl;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+@media (min-width: 640px) {
+  .applicant-resume .nav-content {
+    padding: 0 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .applicant-resume .nav-content {
+    padding: 0 2rem;
+  }
+}
+
+.applicant-resume .nav-header {
+  display: flex;
+  justify-content: space-between;
+  height: 4rem;
+}
+
+.applicant-resume .nav-brand {
+  display: flex;
+  align-items: center;
+}
+
+.applicant-resume .nav-brand a {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #FFFFFF;
+  text-decoration: none;
+}
+
+.applicant-resume .nav-links {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.applicant-resume .nav-link {
+  color: #8A8D9B;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.applicant-resume .nav-link:hover {
+  color: #E05628;
+}
+
+.applicant-resume .nav-link.active {
+  color: #E05628;
+}
+
+.applicant-resume .content {
+  max-width: 7xl;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+@media (min-width: 640px) {
+  .applicant-resume .content {
+    padding: 2rem 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .applicant-resume .content {
+    padding: 2rem 2rem;
+  }
+}
+
+.applicant-resume .back-link {
+  margin-bottom: 1.5rem;
+  color: #E05628;
+  text-decoration: none;
+}
+
+.applicant-resume .back-link:hover {
+  color: #c94a22;
+}
+
+.applicant-resume .card {
+  background: #17181C;
+  border: 1px solid #23252C;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+}
+
+.applicant-resume .card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.applicant-resume h2 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #FFFFFF;
+}
+
+.applicant-resume .download-button {
+  background: #E05628;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  border: none;
+  cursor: pointer;
+}
+
+.applicant-resume .download-button:hover {
+  background: #c94a22;
+}
+
+.applicant-resume .upload-area {
+  border: 2px dashed #23252C;
+  border-radius: 0.5rem;
+  padding: 3rem;
+  text-align: center;
+}
+
+.applicant-resume .upload-icon {
+  height: 4rem;
+  width: 4rem;
+  color: #9ca3af;
+  margin: 0 auto;
+}
+
+.applicant-resume .upload-title {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #FFFFFF;
+  margin-top: 1rem;
+}
+
+.applicant-resume .upload-description {
+  font-size: 0.875rem;
+  color: #8A8D9B;
+  margin-top: 0.25rem;
+}
+
+.applicant-resume .view-button {
+  margin-top: 1.5rem;
+  padding: 0.5rem 1rem;
+  background: #E05628;
+  color: white;
+  border-radius: 0.375rem;
+  border: none;
+  cursor: pointer;
+}
+
+.applicant-resume .view-button:hover {
+  background: #c94a22;
+}
+
+.applicant-resume .summary-section {
+  margin-top: 1.5rem;
+}
+
+.applicant-resume h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #FFFFFF;
+  margin-bottom: 1rem;
+}
+
+.applicant-resume .summary-card {
+  background: #111215;
+  padding: 1rem;
+  border-radius: 0.5rem;
+}
+
+.applicant-resume .summary-text {
+  color: #8A8D9B;
+  margin-bottom: 1rem;
+}
+
+.applicant-resume .skills-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.applicant-resume .skill-tag {
+  padding: 0.25rem 0.75rem;
+  background: #23252C;
+  color: #8A8D9B;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+}

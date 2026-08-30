@@ -1,0 +1,214 @@
+.applications {
+  min-height: 100vh;
+  background: #111215;
+}
+
+.applications nav {
+  background: #17181C;
+  border-bottom: 1px solid #23252C;
+}
+
+.applications .nav-content {
+  max-width: 7xl;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+@media (min-width: 640px) {
+  .applications .nav-content {
+    padding: 0 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .applications .nav-content {
+    padding: 0 2rem;
+  }
+}
+
+.applications .nav-header {
+  display: flex;
+  justify-content: space-between;
+  height: 4rem;
+}
+
+.applications .nav-brand {
+  display: flex;
+  align-items: center;
+}
+
+.applications .nav-brand a {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #FFFFFF;
+  text-decoration: none;
+}
+
+.applications .nav-links {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.applications .nav-link {
+  color: #8A8D9B;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.applications .nav-link:hover {
+  color: #E05628;
+}
+
+.applications .nav-link.active {
+  color: #E05628;
+}
+
+.applications .content {
+  max-width: 7xl;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+@media (min-width: 640px) {
+  .applications .content {
+    padding: 2rem 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .applications .content {
+    padding: 2rem 2rem;
+  }
+}
+
+.applications h2 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #FFFFFF;
+  margin-bottom: 1.5rem;
+}
+
+.applications .table-container {
+  background: #17181C;
+  border: 1px solid #23252C;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+}
+
+.applications table {
+  width: 100%;
+  min-width: 900px;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.applications thead {
+  background: #111215;
+}
+
+.applications th {
+  padding: 0.75rem 1.5rem;
+  text-align: left;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #8A8D9B;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.applications tbody {
+  background: #17181C;
+  border-top: 1px solid #23252C;
+}
+
+.applications tr {
+  border-top: 1px solid #23252C;
+}
+
+.applications td {
+  padding: 0.75rem 1.5rem;
+  vertical-align: middle;
+}
+
+.applications .applicant-info {
+  display: flex;
+  align-items: center;
+}
+
+.applications .avatar {
+  flex-shrink: 0;
+  height: 2.5rem;
+  width: 2.5rem;
+  background: #3b82f6;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+}
+
+.applications .applicant-name {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #FFFFFF;
+}
+
+.applications .applicant-email {
+  font-size: 0.875rem;
+  color: #8A8D9B;
+}
+
+.applications .applicant-detail {
+  font-size: 0.875rem;
+  color: #8A8D9B;
+}
+
+.applications .status-badge {
+  padding: 0.25rem 0.5rem;
+  display: inline-flex;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-radius: 9999px;
+}
+
+.applications .status-badge.new {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.applications .status-badge.shortlisted {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.applications .status-badge.interviewed {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.applications .status-badge.hired {
+  background: #e9d5ff;
+  color: #6b21a8;
+}
+
+.applications .status-badge.rejected {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.applications .action-link {
+  color: #E05628;
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.applications .action-link:hover {
+  color: #c94a22;
+}
