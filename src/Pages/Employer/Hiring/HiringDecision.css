@@ -1,0 +1,326 @@
+.hiring-decision {
+  min-height: 100vh;
+  background: #111215;
+}
+
+.hiring-decision nav {
+  background: #17181C;
+  border-bottom: 1px solid #23252C;
+}
+
+.hiring-decision .nav-content {
+  max-width: 7xl;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+@media (min-width: 640px) {
+  .hiring-decision .nav-content {
+    padding: 0 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .hiring-decision .nav-content {
+    padding: 0 2rem;
+  }
+}
+
+.hiring-decision .nav-header {
+  display: flex;
+  justify-content: space-between;
+  height: 4rem;
+}
+
+.hiring-decision .nav-brand {
+  display: flex;
+  align-items: center;
+}
+
+.hiring-decision .nav-brand a {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #FFFFFF;
+  text-decoration: none;
+}
+
+.hiring-decision .nav-links {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.hiring-decision .nav-link {
+  color: #8A8D9B;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.hiring-decision .nav-link:hover {
+  color: #E05628;
+}
+
+.hiring-decision .nav-link.active {
+  color: #E05628;
+}
+
+.hiring-decision .content {
+  max-width: 7xl;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+@media (min-width: 640px) {
+  .hiring-decision .content {
+    padding: 2rem 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .hiring-decision .content {
+    padding: 2rem 2rem;
+  }
+}
+
+.hiring-decision .back-link {
+  margin-bottom: 1.5rem;
+  color: #E05628;
+  text-decoration: none;
+}
+
+.hiring-decision .back-link:hover {
+  color: #c94a22;
+}
+
+.hiring-decision .card {
+  background: #17181C;
+  border: 1px solid #23252C;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+}
+
+.hiring-decision h2 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #FFFFFF;
+  margin-bottom: 1.5rem;
+}
+
+.hiring-decision .card-header {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+}
+
+.hiring-decision .avatar-large {
+  flex-shrink: 0;
+  height: 5rem;
+  width: 5rem;
+  background: #3b82f6;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.hiring-decision .applicant-info {
+  margin-left: 1.5rem;
+  flex: 1;
+}
+
+.hiring-decision .applicant-name {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #FFFFFF;
+}
+
+.hiring-decision .applicant-subtitle {
+  color: #8A8D9B;
+}
+
+.hiring-decision .applicant-meta {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: #8A8D9B;
+}
+
+.hiring-decision .metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .hiring-decision .metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.hiring-decision .metric-card {
+  background: #111215;
+  padding: 1rem;
+  border-radius: 0.5rem;
+}
+
+.hiring-decision .metric-label {
+  font-size: 0.875rem;
+  color: #8A8D9B;
+}
+
+.hiring-decision .metric-value {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #FFFFFF;
+}
+
+.hiring-decision .section {
+  margin-bottom: 1.5rem;
+}
+
+.hiring-decision h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #FFFFFF;
+  margin-bottom: 0.5rem;
+}
+
+.hiring-decision p {
+  color: #8A8D9B;
+}
+
+.hiring-decision .skills-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.hiring-decision .skill-tag {
+  padding: 0.25rem 0.75rem;
+  background: #23252C;
+  color: #8A8D9B;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+}
+
+.hiring-decision .decision-section {
+  border-top: 1px solid #23252C;
+  padding-top: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.hiring-decision h4 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #FFFFFF;
+  margin-bottom: 1rem;
+}
+
+.hiring-decision .decision-grid {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .hiring-decision .decision-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.hiring-decision .decision-card {
+  border: 2px solid;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+}
+
+.hiring-decision .decision-card.green {
+  border-color: #059669;
+  background: #111215;
+}
+
+.hiring-decision .decision-card.red {
+  border-color: #dc2626;
+  background: #111215;
+}
+
+.hiring-decision .decision-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.hiring-decision .decision-icon {
+  height: 2rem;
+  width: 2rem;
+}
+
+.hiring-decision .decision-icon.green {
+  color: #16a34a;
+}
+
+.hiring-decision .decision-icon.red {
+  color: #dc2626;
+}
+
+.hiring-decision .decision-title {
+  margin-left: 0.75rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.hiring-decision .decision-title.green {
+  color: #059669;
+}
+
+.hiring-decision .decision-title.red {
+  color: #dc2626;
+}
+
+.hiring-decision .decision-description {
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+
+.hiring-decision .decision-description.green {
+  color: #8A8D9B;
+}
+
+.hiring-decision .decision-description.red {
+  color: #8A8D9B;
+}
+
+.hiring-decision .decision-button {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  transition: background-color 0.2s;
+}
+
+.hiring-decision .decision-button.green {
+  background: #16a34a;
+  color: white;
+}
+
+.hiring-decision .decision-button.green:hover {
+  background: #15803d;
+}
+
+.hiring-decision .decision-button.red {
+  background: #dc2626;
+  color: white;
+}
+
+.hiring-decision .decision-button.red:hover {
+  background: #b91c1c;
+}

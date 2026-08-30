@@ -1,0 +1,239 @@
+.applicants {
+  min-height: 100vh;
+  background: #111215;
+}
+
+.applicants nav {
+  background: #17181C;
+  border-bottom: 1px solid #23252C;
+}
+
+.applicants .nav-content {
+  max-width: 7xl;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+@media (min-width: 640px) {
+  .applicants .nav-content {
+    padding: 0 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .applicants .nav-content {
+    padding: 0 2rem;
+  }
+}
+
+.applicants .nav-header {
+  display: flex;
+  justify-content: space-between;
+  height: 4rem;
+}
+
+.applicants .nav-brand {
+  display: flex;
+  align-items: center;
+}
+
+.applicants .nav-brand a {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #FFFFFF;
+  text-decoration: none;
+}
+
+.applicants .nav-links {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.applicants .nav-link {
+  color: #8A8D9B;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.applicants .nav-link:hover {
+  color: #E05628;
+}
+
+.applicants .nav-link.active {
+  color: #E05628;
+}
+
+.applicants .content {
+  max-width: 7xl;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+@media (min-width: 640px) {
+  .applicants .content {
+    padding: 2rem 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .applicants .content {
+    padding: 2rem 2rem;
+  }
+}
+
+.applicants h2 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #FFFFFF;
+  margin-bottom: 1.5rem;
+}
+
+.applicants .filters {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.applicants .filter-button {
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.applicants .filter-button.active {
+  background: #E05628;
+  color: white;
+}
+
+.applicants .filter-button:not(.active) {
+  background: #17181C;
+  color: #8A8D9B;
+}
+
+.applicants .filter-button:hover {
+  background: #c94a22;
+}
+
+.applicants .table-container {
+  background: #17181C;
+  border: 1px solid #23252C;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+}
+
+.applicants table {
+  width: 100%;
+  min-width: 800px;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.applicants thead {
+  background: #111215;
+}
+
+.applicants th {
+  padding: 0.75rem 1.5rem;
+  text-align: left;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #8A8D9B;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.applicants tbody {
+  background: #17181C;
+  border-top: 1px solid #23252C;
+}
+
+.applicants tr {
+  border-top: 1px solid #23252C;
+}
+
+.applicants td {
+  padding: 0.75rem 1.5rem;
+  vertical-align: middle;
+}
+
+.applicants .applicant-info {
+  display: flex;
+  align-items: center;
+}
+
+.applicants .avatar {
+  flex-shrink: 0;
+  height: 2.5rem;
+  width: 2.5rem;
+  background: #3b82f6;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+}
+
+.applicants .applicant-name {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #FFFFFF;
+}
+
+.applicants .applicant-detail {
+  font-size: 0.875rem;
+  color: #8A8D9B;
+}
+
+.applicants .status-badge {
+  padding: 0.25rem 0.5rem;
+  display: inline-flex;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-radius: 9999px;
+}
+
+.applicants .status-badge.new {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.applicants .status-badge.shortlisted {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.applicants .status-badge.interviewed {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.applicants .status-badge.hired {
+  background: #e9d5ff;
+  color: #6b21a8;
+}
+
+.applicants .status-badge.rejected {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.applicants .action-link {
+  color: #E05628;
+  text-decoration: none;
+  margin-right: 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.applicants .action-link:hover {
+  color: #c94a22;
+}

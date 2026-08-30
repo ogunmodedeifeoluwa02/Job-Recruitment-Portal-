@@ -1,0 +1,346 @@
+.employer-dashboard {
+  min-height: 100vh;
+  background: #111215;
+}
+
+/* Top Header */
+.employer-dashboard .top-header {
+  background: #17181C;
+  border-bottom: 1px solid #23252C;
+}
+
+.employer-dashboard .header-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 1rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.employer-dashboard .brand-section {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.employer-dashboard .brand-icon {
+  display: flex;
+  align-items: center;
+}
+
+.employer-dashboard .orange-circle {
+  width: 2rem;
+  height: 2rem;
+  background: #E05628;
+  border-radius: 50%;
+}
+
+.employer-dashboard .brand-text {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #FFFFFF;
+}
+
+.employer-dashboard .user-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.employer-dashboard .employer-badge {
+  background: #E05628;
+  color: #FFFFFF;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.employer-dashboard .avatar {
+  width: 2rem;
+  height: 2rem;
+  background: #23252C;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFFFFF;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.employer-dashboard .user-email {
+  color: #8A8D9B;
+  font-size: 0.875rem;
+}
+
+.employer-dashboard .logout-link {
+  color: #8A8D9B;
+  text-decoration: none;
+  font-size: 0.875rem;
+}
+
+.employer-dashboard .logout-link:hover {
+  color: #FFFFFF;
+}
+
+/* Sub-Navigation Bar */
+.employer-dashboard .sub-nav {
+  background: #17181C;
+  border-bottom: 1px solid #23252C;
+}
+
+.employer-dashboard .sub-nav-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.employer-dashboard .nav-tabs {
+  display: flex;
+  gap: 2rem;
+}
+
+.employer-dashboard .nav-tab {
+  color: #8A8D9B;
+  text-decoration: none;
+  padding: 1rem 0;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-bottom: 2px solid transparent;
+  transition: color 0.2s;
+}
+
+.employer-dashboard .nav-tab:hover {
+  color: #FFFFFF;
+}
+
+.employer-dashboard .nav-tab.active {
+  color: #E05628;
+  border-bottom-color: #E05628;
+}
+
+.employer-dashboard .developer-tools {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #8A8D9B;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.employer-dashboard .developer-tools:hover {
+  color: #FFFFFF;
+}
+
+/* Content Area */
+.employer-dashboard .content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+/* Hero Section */
+.employer-dashboard .hero-section {
+  margin-bottom: 2rem;
+}
+
+.employer-dashboard .hero-subheadline {
+  color: #E05628;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.employer-dashboard .hero-title {
+  color: #FFFFFF;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.employer-dashboard .hero-action-button {
+  background: #E05628;
+  color: #FFFFFF;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.employer-dashboard .hero-action-button:hover {
+  background: #c94a22;
+}
+
+/* Metrics Bar */
+.employer-dashboard .metrics-bar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid #23252C;
+}
+
+.employer-dashboard .metric-item {
+  padding: 1.5rem;
+  border-right: 1px solid #23252C;
+  border-bottom: 2px solid #E05628;
+}
+
+.employer-dashboard .metric-item:last-child {
+  border-right: none;
+}
+
+.employer-dashboard .metric-label {
+  color: #8A8D9B;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+}
+
+.employer-dashboard .metric-value {
+  color: #FFFFFF;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+/* Main Grid Section */
+.employer-dashboard .main-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
+.employer-dashboard .grid-card {
+  background: #17181C;
+  border: 1px solid #23252C;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+}
+
+.employer-dashboard .card-title {
+  color: #FFFFFF;
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  margin-bottom: 1rem;
+}
+
+/* Decision Queue */
+.employer-dashboard .dossier-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.employer-dashboard .dossier-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: #111215;
+  border: 1px solid #23252C;
+  border-radius: 0.375rem;
+}
+
+.employer-dashboard .dossier-info {
+  flex: 1;
+}
+
+.employer-dashboard .candidate-name {
+  color: #FFFFFF;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.employer-dashboard .candidate-role {
+  color: #8A8D9B;
+  font-size: 0.75rem;
+  margin-bottom: 0.25rem;
+}
+
+.employer-dashboard .applied-timeline {
+  color: #8A8D9B;
+  font-size: 0.75rem;
+}
+
+.employer-dashboard .dossier-button {
+  background: transparent;
+  color: #E05628;
+  border: 1px solid #E05628;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.employer-dashboard .dossier-button:hover {
+  background: #E05628;
+  color: #FFFFFF;
+}
+
+/* Upcoming Conversations */
+.employer-dashboard .conversation-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.employer-dashboard .conversation-item {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem;
+  background: #111215;
+  border: 1px solid #23252C;
+  border-radius: 0.375rem;
+}
+
+.employer-dashboard .date-badge {
+  background: #E05628;
+  color: #FFFFFF;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-align: center;
+  min-width: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.employer-dashboard .conversation-info {
+  flex: 1;
+}
+
+.employer-dashboard .conversation-info .candidate-name {
+  color: #FFFFFF;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.employer-dashboard .conversation-info .candidate-role {
+  color: #8A8D9B;
+  font-size: 0.75rem;
+  margin-bottom: 0.25rem;
+}
+
+.employer-dashboard .interview-time {
+  color: #8A8D9B;
+  font-size: 0.75rem;
+}
