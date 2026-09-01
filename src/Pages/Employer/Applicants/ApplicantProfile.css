@@ -1,0 +1,280 @@
+.applicant-profile {
+  min-height: 100vh;
+  background: #111215;
+}
+
+.applicant-profile nav {
+  background: #17181C;
+  border-bottom: 1px solid #23252C;
+}
+
+.applicant-profile .nav-content {
+  max-width: 7xl;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+@media (min-width: 640px) {
+  .applicant-profile .nav-content {
+    padding: 0 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .applicant-profile .nav-content {
+    padding: 0 2rem;
+  }
+}
+
+.applicant-profile .nav-header {
+  display: flex;
+  justify-content: space-between;
+  height: 4rem;
+}
+
+.applicant-profile .nav-brand {
+  display: flex;
+  align-items: center;
+}
+
+.applicant-profile .nav-brand a {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #FFFFFF;
+  text-decoration: none;
+}
+
+.applicant-profile .nav-links {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.applicant-profile .nav-link {
+  color: #8A8D9B;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.applicant-profile .nav-link:hover {
+  color: #E05628;
+}
+
+.applicant-profile .nav-link.active {
+  color: #E05628;
+}
+
+.applicant-profile .content {
+  max-width: 7xl;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+@media (min-width: 640px) {
+  .applicant-profile .content {
+    padding: 2rem 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .applicant-profile .content {
+    padding: 2rem 2rem;
+  }
+}
+
+.applicant-profile .back-link {
+  margin-bottom: 1.5rem;
+  color: #E05628;
+  text-decoration: none;
+}
+
+.applicant-profile .back-link:hover {
+  color: #c94a22;
+}
+
+.applicant-profile .card {
+  background: #17181C;
+  border: 1px solid #23252C;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+}
+
+.applicant-profile .card-header {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+}
+
+.applicant-profile .avatar-large {
+  flex-shrink: 0;
+  height: 5rem;
+  width: 5rem;
+  background: #3b82f6;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.applicant-profile .applicant-info {
+  margin-left: 1.5rem;
+  flex: 1;
+}
+
+.applicant-profile h2 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #FFFFFF;
+}
+
+.applicant-profile .applicant-subtitle {
+  color: #8A8D9B;
+}
+
+.applicant-profile .applicant-meta {
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.applicant-profile .status-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.applicant-profile .status-badge.new {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.applicant-profile .status-badge.shortlisted {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.applicant-profile .status-badge.interviewed {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.applicant-profile .status-badge.hired {
+  background: #e9d5ff;
+  color: #6b21a8;
+}
+
+.applicant-profile .status-badge.rejected {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.applicant-profile .metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .applicant-profile .metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.applicant-profile .metric-card {
+  background: #111215;
+  padding: 1rem;
+  border-radius: 0.5rem;
+}
+
+.applicant-profile .metric-label {
+  font-size: 0.875rem;
+  color: #8A8D9B;
+}
+
+.applicant-profile .metric-value {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #FFFFFF;
+}
+
+.applicant-profile .section {
+  margin-bottom: 1.5rem;
+}
+
+.applicant-profile h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #FFFFFF;
+  margin-bottom: 0.5rem;
+}
+
+.applicant-profile p {
+  color: #8A8D9B;
+}
+
+.applicant-profile .skills-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.applicant-profile .skill-tag {
+  padding: 0.25rem 0.75rem;
+  background: #23252C;
+  color: #8A8D9B;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+}
+
+.applicant-profile .button-group {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.applicant-profile .button-secondary {
+  padding: 0.5rem 1.5rem;
+  background: #17181C;
+  color: #8A8D9B;
+  border: 1px solid #23252C;
+  border-radius: 0.375rem;
+  text-decoration: none;
+}
+
+.applicant-profile .button-secondary:hover {
+  background: #23252C;
+}
+
+.applicant-profile .button-primary {
+  padding: 0.5rem 1.5rem;
+  background: #E05628;
+  color: white;
+  border-radius: 0.375rem;
+  text-decoration: none;
+}
+
+.applicant-profile .button-primary:hover {
+  background: #c94a22;
+}
+
+.applicant-profile .button-green {
+  padding: 0.5rem 1.5rem;
+  background: #059669;
+  color: white;
+  border-radius: 0.375rem;
+  text-decoration: none;
+}
+
+.applicant-profile .button-green:hover {
+  background: #047857;
+}
