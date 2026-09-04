@@ -9,8 +9,8 @@ class Api {
       ...options.headers,
     };
 
-    // Only add auth header if a token is available
-    const token = localStorage.getItem('authToken');
+    // Grab the stored token using the key name 'token'
+    const token = localStorage.getItem('token');
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
     }

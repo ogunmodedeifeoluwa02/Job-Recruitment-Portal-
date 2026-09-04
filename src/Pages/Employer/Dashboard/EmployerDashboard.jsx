@@ -19,8 +19,8 @@ export default function EmployerDashboard() {
       try {
         // Load applications and jobs in parallel
         const [applicationsData, jobsData] = await Promise.all([
-          api.getApplications(),
-          api.getJobs()
+          api.getApplications().catch(() => []),
+          api.getJobs().catch(() => [])
         ]);
         
         // Calculate metrics from data
@@ -35,7 +35,9 @@ export default function EmployerDashboard() {
         setCandidates(applicationsData || []);
       } catch (err) {
         console.error('Failed to load dashboard data:', err);
-        setError('Failed to load dashboard data');
+        // Don't set error - show dashboard with empty data instead
+        setMetrics({ openRoles: 0, totalApplicants: 0, interviewsScheduled: 0, hired: 0 });
+        setCandidates([]);
       } finally {
         setLoading(false);
       }

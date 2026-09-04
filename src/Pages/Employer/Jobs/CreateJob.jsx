@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/immutability */
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router';
 import api from '../../../Core/Api';
@@ -5,23 +6,24 @@ import './CreateJob.css';
 
 export default function CreateJob() {
   const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     title: '',
     location: '',
     employmentType: 'FullTime',
-    experienceLevel: 'Entry',
+    experienceLevel: 0,
     salary: '',
     categoryId: '',
     deadline: '',
     description: '',
     requirements: '',
   });
+
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    
     loadCategories();
   }, []);
 
@@ -41,42 +43,71 @@ export default function CreateJob() {
     });
   };
 
-  const handleSaveDraft = async () => {
+  const validateForm = () => {
+    if (
+      !formData.title ||
+      !formData.location ||
+      !formData.categoryId ||
+      !formData.deadline ||
+      !formData.description ||
+      !formData.requirements
+    ) {
+      setError(
+        'Please fill in all required fields (*), including Category and Application Deadline.'
+      );
+      return false;
+    }
+
+    return true;
+  };
+
+  const createJob = async (status) => {
     setLoading(true);
     setError(null);
+
+    if (!validateForm()) {
+      setLoading(false);
+      return;
+    }
+
     try {
-      const jobData = {
-        ...formData,
-        status: 'Draft',
-        deadline: formData.deadline ? new Date(formData.deadline).toISOString() : null,
-        salary: formData.salary ? parseFloat(formData.salary) : null,
+      const payload = {
+        Title: formData.title,
+        Location: formData.location,
+        EmploymentType: formData.employmentType,
+        ExperienceLevel: Number(formData.experienceLevel),
+        Salary: formData.salary ? Number(formData.salary) : 0,
+        CategoryId: formData.categoryId,
+        Deadline: new Date(formData.deadline).toISOString(),
+        Description: formData.description,
+        Requirements: formData.requirements,
+        Status: status,
       };
-      await api.createJob(jobData);
+
+      console.log('Create Job Payload:', payload);
+
+      await api.createJob(payload);
+
       navigate('/employer/jobs');
     } catch (err) {
-      console.error('Failed to save draft:', err);
-      setError('Failed to save draft');
+      console.error('Failed to create job:', err);
+
+      setError(
+        status === 0
+          ? 'Failed to save draft. Please check your input fields.'
+          : 'Failed to publish job. Please check your input fields.'
+      );
+    } finally {
       setLoading(false);
     }
   };
 
-  const handlePublish = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const jobData = {
-        ...formData,
-        status: 'Active',
-        deadline: formData.deadline ? new Date(formData.deadline).toISOString() : null,
-        salary: formData.salary ? parseFloat(formData.salary) : null,
-      };
-      await api.createJob(jobData);
-      navigate('/employer/jobs');
-    } catch (err) {
-      console.error('Failed to publish job:', err);
-      setError('Failed to publish job');
-      setLoading(false);
-    }
+  const handleSaveDraft = () => {
+    createJob(0);
+  };
+
+  const handlePublish = () => {
+    createJob(1);
   };
 
   return (
@@ -87,11 +118,23 @@ export default function CreateJob() {
             <div className="nav-brand">
               <Link to="/employer">Employer Portal</Link>
             </div>
+
             <div className="nav-links">
-              <Link to="/employer" className="nav-link">Dashboard</Link>
-              <Link to="/employer/jobs" className="nav-link active">Jobs</Link>
-              <Link to="/employer/applicants" className="nav-link">Applicants</Link>
-              <Link to="/employer/interviews" className="nav-link">Interviews</Link>
+              <Link to="/employer" className="nav-link">
+                Dashboard
+              </Link>
+
+              <Link to="/employer/jobs" className="nav-link active">
+                Jobs
+              </Link>
+
+              <Link to="/employer/applicants" className="nav-link">
+                Applicants
+              </Link>
+
+              <Link to="/employer/interviews" className="nav-link">
+                Interviews
+              </Link>
             </div>
           </div>
         </div>
@@ -106,15 +149,25 @@ export default function CreateJob() {
 
         <div className="form-card">
           <h2>Create Job Posting</h2>
-          
+
           {error && (
-            <div className="error-message" style={{ color: '#dc2626', marginBottom: '1rem', padding: '0.75rem', backgroundColor: '#fee2e2', borderRadius: '0.375rem' }}>
+            <div
+              className="error-message"
+              style={{
+                color: '#dc2626',
+                marginBottom: '1rem',
+                padding: '0.75rem',
+                backgroundColor: '#fee2e2',
+                borderRadius: '0.375rem',
+              }}
+            >
               {error}
             </div>
           )}
 
           <div className="form-group">
             <label htmlFor="title">Job Title *</label>
+
             <input
               type="text"
               id="title"
@@ -129,6 +182,7 @@ export default function CreateJob() {
           <div className="form-row">
             <div className="form-group">
               <label htmlFor="location">Location *</label>
+
               <input
                 type="text"
                 id="location"
@@ -141,12 +195,16 @@ export default function CreateJob() {
             </div>
 
             <div className="form-group">
-              <label htmlFor="employmentType">Employment Type</label>
+              <label htmlFor="employmentType">
+                Employment Type *
+              </label>
+
               <select
                 id="employmentType"
                 name="employmentType"
                 value={formData.employmentType}
                 onChange={handleChange}
+                required
               >
                 <option value="FullTime">Full-time</option>
                 <option value="PartTime">Part-time</option>
@@ -158,32 +216,42 @@ export default function CreateJob() {
 
           <div className="form-row">
             <div className="form-group">
-              <label htmlFor="experienceLevel">Experience Level</label>
+              <label htmlFor="experienceLevel">
+                Experience Level *
+              </label>
+
               <select
                 id="experienceLevel"
                 name="experienceLevel"
                 value={formData.experienceLevel}
                 onChange={handleChange}
+                required
               >
-                <option value="Entry">Entry Level</option>
-                <option value="Mid">Mid Level</option>
-                <option value="Senior">Senior Level</option>
-                <option value="Lead">Lead Level</option>
-                <option value="Executive">Executive</option>
+                <option value={0}>Entry Level</option>
+                <option value={1}>Mid Level</option>
+                <option value={2}>Senior Level</option>
+                <option value={3}>Lead Level</option>
+                <option value={4}>Executive</option>
               </select>
             </div>
 
             <div className="form-group">
-              <label htmlFor="categoryId">Category</label>
+              <label htmlFor="categoryId">Category *</label>
+
               <select
                 id="categoryId"
                 name="categoryId"
                 value={formData.categoryId}
                 onChange={handleChange}
+                required
               >
                 <option value="">Select a category</option>
+
                 {categories.map((category) => (
-                  <option key={category.id} value={category.id}>
+                  <option
+                    key={category.id}
+                    value={category.id}
+                  >
                     {category.name}
                   </option>
                 ))}
@@ -194,6 +262,7 @@ export default function CreateJob() {
           <div className="form-row">
             <div className="form-group">
               <label htmlFor="salary">Salary</label>
+
               <input
                 type="number"
                 id="salary"
@@ -206,19 +275,26 @@ export default function CreateJob() {
             </div>
 
             <div className="form-group">
-              <label htmlFor="deadline">Application Deadline</label>
+              <label htmlFor="deadline">
+                Application Deadline *
+              </label>
+
               <input
                 type="date"
                 id="deadline"
                 name="deadline"
                 value={formData.deadline}
                 onChange={handleChange}
+                required
               />
             </div>
           </div>
 
           <div className="form-group">
-            <label htmlFor="description">Job Description *</label>
+            <label htmlFor="description">
+              Job Description *
+            </label>
+
             <textarea
               id="description"
               name="description"
@@ -231,7 +307,10 @@ export default function CreateJob() {
           </div>
 
           <div className="form-group">
-            <label htmlFor="requirements">Requirements *</label>
+            <label htmlFor="requirements">
+              Requirements *
+            </label>
+
             <textarea
               id="requirements"
               name="requirements"
@@ -244,15 +323,16 @@ export default function CreateJob() {
           </div>
 
           <div className="button-group">
-            <button 
-              onClick={handleSaveDraft} 
+            <button
+              onClick={handleSaveDraft}
               className="button-secondary"
               disabled={loading}
             >
               {loading ? 'Saving...' : 'Save Draft'}
             </button>
-            <button 
-              onClick={handlePublish} 
+
+            <button
+              onClick={handlePublish}
               className="button-primary"
               disabled={loading}
             >
