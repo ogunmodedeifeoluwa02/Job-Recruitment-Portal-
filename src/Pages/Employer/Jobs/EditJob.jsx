@@ -38,7 +38,7 @@ export default function EditJob() {
           location: jobData.location || '',
           employmentType: jobData.employmentType || 'FullTime',
           experienceLevel: jobData.experienceLevel || 'Entry',
-          salary: jobData.salary || '',
+          salary: jobData.salary == null ? '' : jobData.salary,
           categoryId: jobData.categoryId || '',
           deadline: jobData.deadline ? jobData.deadline.split('T')[0] : '',
           description: jobData.description || '',
@@ -95,7 +95,7 @@ export default function EditJob() {
     try {
       const jobData = {
         ...formData,
-        status: 'Active',
+        status: 'Published',
         deadline: formData.deadline ? new Date(formData.deadline).toISOString() : null,
         salary: formData.salary ? parseFloat(formData.salary) : null,
       };
@@ -260,8 +260,6 @@ export default function EditJob() {
                 <option value="Entry">Entry Level</option>
                 <option value="Mid">Mid Level</option>
                 <option value="Senior">Senior Level</option>
-                <option value="Lead">Lead Level</option>
-                <option value="Executive">Executive</option>
               </select>
             </div>
 

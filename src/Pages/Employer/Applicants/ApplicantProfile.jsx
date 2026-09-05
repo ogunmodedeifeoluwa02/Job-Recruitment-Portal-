@@ -1,10 +1,12 @@
-import { Link, useParams } from 'react-router';
+import { Link, useParams, useSearchParams } from 'react-router';
 import { useState, useEffect } from 'react';
 import api from '../../../Core/Api';
 import './ApplicantProfile.css';
 
 export default function ApplicantProfile() {
   const { id } = useParams();
+  const [params] = useSearchParams();
+  const jobId = params.get("jobId");
   const [applicant, setApplicant] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -14,7 +16,8 @@ export default function ApplicantProfile() {
       setLoading(true);
       setError(null);
       try {
-        const data = await api.getApplicant(id);
+        const data = await api.getApplicant(id, jobId);
+        console.log('Applicant loaded:', id);
         setApplicant(data);
       } catch (err) {
         console.error('Failed to load applicant:', err);
@@ -25,7 +28,7 @@ export default function ApplicantProfile() {
     };
 
     loadApplicant();
-  }, [id]);
+  }, [id, jobId]);
 
   if (loading) {
     return (
@@ -67,11 +70,11 @@ export default function ApplicantProfile() {
 
   const getStageClass = (stage) => {
     switch (stage) {
-      case 'new': return 'new';
-      case 'shortlisted': return 'shortlisted';
-      case 'interviewed': return 'interviewed';
-      case 'hired': return 'hired';
-      case 'rejected': return 'rejected';
+      case 'Open': return 'new';
+      case 'Reviewed': return 'shortlisted';
+      case 'Interviewing': return 'interviewed';
+      case 'Hired': return 'hired';
+      case 'Rejected': return 'rejected';
       default: return 'new';
     }
   };
@@ -95,6 +98,7 @@ export default function ApplicantProfile() {
       </nav>
 
       <div className="content">
+        <p style={{ color: '#E05628', marginBottom: '1rem' }}>Coming soon — API work in progress.</p>
         <div>
           <Link to="/employer/applicants" className="back-link">
             ← Back to Applicants
@@ -104,16 +108,16 @@ export default function ApplicantProfile() {
         <div className="card">
           <div className="card-header">
             <div className="avatar-large">
-              {applicant.name.split(' ').map(n => n[0]).join('')}
+              {applicant.applicantName.split(' ').map(n => n[0]).join('')}
             </div>
             <div className="applicant-info">
-              <h2>{applicant.name}</h2>
-              <p className="applicant-subtitle">{applicant.role}</p>
+              <h2>{applicant.applicantName}</h2>
+              <p className="applicant-subtitle">{applicant.jobTitle}</p>
               <div className="applicant-meta">
-                <span className={`status-badge ${getStageClass(applicant.stage)}`}>
-                  {applicant.stage.charAt(0).toUpperCase() + applicant.stage.slice(1)}
+                <span className={`status-badge ${getStageClass(applicant.status)}`}>
+                  {applicant.status.charAt(0).toUpperCase() + applicant.status.slice(1)}
                 </span>
-                <span>Applied: {applicant.appliedDate}</span>
+                <span>Applied: {new Date(applicant.appliedAtUtc).toLocaleDateString()}</span>
               </div>
             </div>
           </div>
@@ -121,7 +125,7 @@ export default function ApplicantProfile() {
           <div className="metrics-grid">
             <div className="metric-card">
               <p className="metric-label">Email</p>
-              <p className="metric-value">{applicant.email}</p>
+              <p className="metric-value">{applicant.applicantEmail}</p>
             </div>
             <div className="metric-card">
               <p className="metric-label">Phone</p>
@@ -145,7 +149,7 @@ export default function ApplicantProfile() {
           <div className="section">
             <h3>Skills</h3>
             <div className="skills-container">
-              {applicant.skills.map((skill, index) => (
+              {applicant.skills && applicant.skills.map((skill, index) => (
                 <span key={index} className="skill-tag">
                   {skill}
                 </span>
@@ -159,15 +163,15 @@ export default function ApplicantProfile() {
           </div>
 
           <div className="button-group">
-            <Link to={`/employer/applicants/${applicant.id}/resume`} className="button-secondary">
+            <Link to={`/employer/applicants/${applicant.applicantId}/resume?jobId=${applicant.jobId}`} className="button-secondary">
               View Resume
             </Link>
             <div>
-              <Link to={`/employer/hiring/${applicant.id}`} className="button-green">
+              <Link to={`/employer/hiring/${applicant.jobId}/${applicant.applicantId}`} className="button-green">
                 Make Hiring Decision
               </Link>
-              <Link to={`/employer/interviews/schedule/${applicant.id}`} className="button-primary">
-                Schedule Interview
+              <Link to={`/employer/applications/${applicant.jobId}/${applicant.applicantId}`} className="button-primary">
+                Review Application
               </Link>
             </div>
           </div>

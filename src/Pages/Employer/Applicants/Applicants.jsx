@@ -33,9 +33,9 @@ export default function Applicants() {
 
   const getStatusClass = (status) => {
     switch (status) {
-      case 'Pending': return 'new';
-      case 'Shortlisted': return 'shortlisted';
-      case 'Interviewed': return 'interviewed';
+      case 'Open': return 'new';
+      case 'Reviewed': return 'shortlisted';
+      case 'Interviewing': return 'interviewed';
       case 'Hired': return 'hired';
       case 'Rejected': return 'rejected';
       default: return 'new';
@@ -71,22 +71,22 @@ export default function Applicants() {
             All
           </button>
           <button
-            onClick={() => setFilter('Pending')}
-            className={`filter-button ${filter === 'Pending' ? 'active' : ''}`}
+            onClick={() => setFilter('Open')}
+            className={`filter-button ${filter === 'Open' ? 'active' : ''}`}
           >
-            Pending
+            Open
           </button>
           <button
-            onClick={() => setFilter('Shortlisted')}
-            className={`filter-button ${filter === 'Shortlisted' ? 'active' : ''}`}
+            onClick={() => setFilter('Reviewed')}
+            className={`filter-button ${filter === 'Reviewed' ? 'active' : ''}`}
           >
-            Shortlisted
+            Reviewed
           </button>
           <button
-            onClick={() => setFilter('Interviewed')}
-            className={`filter-button ${filter === 'Interviewed' ? 'active' : ''}`}
+            onClick={() => setFilter('Interviewing')}
+            className={`filter-button ${filter === 'Interviewing' ? 'active' : ''}`}
           >
-            Interviewed
+            Interviewing
           </button>
           <button
             onClick={() => setFilter('Hired')}
@@ -129,7 +129,7 @@ export default function Applicants() {
               </thead>
               <tbody>
                 {filteredApplicants.map((application) => (
-                  <tr key={application.id}>
+                  <tr key={`${application.jobId}-${application.applicantId}`}>
                     <td>
                       <div className="applicant-info">
                         <div className="avatar">
@@ -145,7 +145,7 @@ export default function Applicants() {
                       <div className="applicant-detail">{application.applicantEmail}</div>
                     </td>
                     <td>
-                      <div className="applicant-detail">{application.appliedDate}</div>
+                      <div className="applicant-detail">{new Date(application.appliedAtUtc).toLocaleDateString()}</div>
                     </td>
                     <td>
                       <span className={`status-badge ${getStatusClass(application.status)}`}>
@@ -153,10 +153,12 @@ export default function Applicants() {
                       </span>
                     </td>
                     <td>
-                      <Link to={`/employer/applications/${application.id}`} className="action-link">
+                      <Link to={`/employer/applicants/${application.applicantId}?jobId=${application.jobId}`} className="action-link">Profile</Link>
+                      <Link to={`/employer/applicants/${application.applicantId}/resume?jobId=${application.jobId}`} className="action-link">CV</Link>
+                      <Link to={`/employer/applications/${application.jobId}/${application.applicantId}`} className="action-link">
                         View Details
                       </Link>
-                      <Link to={`/employer/hiring/${application.id}`} className="action-link">
+                      <Link to={`/employer/hiring/${application.jobId}/${application.applicantId}`} className="action-link">
                         Hiring Decision
                       </Link>
                     </td>

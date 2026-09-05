@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/immutability */
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router';
 import api from '../../../Core/Api';
@@ -11,7 +10,7 @@ export default function CreateJob() {
     title: '',
     location: '',
     employmentType: 'FullTime',
-    experienceLevel: 0,
+    experienceLevel: 'Entry',
     salary: '',
     categoryId: '',
     deadline: '',
@@ -24,17 +23,16 @@ export default function CreateJob() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    async function loadCategories() {
+      try {
+        const data = await api.getCategories();
+        setCategories(data);
+      } catch (error) {
+        setError(error.message);
+      }
+    }
     loadCategories();
   }, []);
-
-  const loadCategories = async () => {
-    try {
-      const data = await api.getCategories();
-      setCategories(data);
-    } catch (err) {
-      console.error('Failed to load categories:', err);
-    }
-  };
 
   const handleChange = (e) => {
     setFormData({
@@ -58,6 +56,10 @@ export default function CreateJob() {
       return false;
     }
 
+    if (formData.salary !== '' && Number(formData.salary) < 0) {
+      setError('Salary cannot be negative.');
+      return false;
+    }
     return true;
   };
 
@@ -72,42 +74,38 @@ export default function CreateJob() {
 
     try {
       const payload = {
-        Title: formData.title,
-        Location: formData.location,
-        EmploymentType: formData.employmentType,
-        ExperienceLevel: Number(formData.experienceLevel),
-        Salary: formData.salary ? Number(formData.salary) : 0,
-        CategoryId: formData.categoryId,
-        Deadline: new Date(formData.deadline).toISOString(),
-        Description: formData.description,
-        Requirements: formData.requirements,
-        Status: status,
+        title: formData.title,
+        location: formData.location,
+        employmentType: formData.employmentType,
+        experienceLevel: formData.experienceLevel,
+        salary: formData.salary ? Number(formData.salary) : null,
+        categoryId: formData.categoryId,
+        deadline: new Date(formData.deadline).toISOString(),
+        description: formData.description,
+        requirements: formData.requirements,
+        status: status,
       };
 
-      console.log('Create Job Payload:', payload);
 
+      console.log('Create Job Payload:', payload);
       await api.createJob(payload);
+      console.log('Job created successfully');
 
       navigate('/employer/jobs');
     } catch (err) {
       console.error('Failed to create job:', err);
 
-      setError(
-        status === 0
-          ? 'Failed to save draft. Please check your input fields.'
-          : 'Failed to publish job. Please check your input fields.'
-      );
-    } finally {
-      setLoading(false);
+      setError(err.message);
     }
+    setLoading(false);
   };
 
   const handleSaveDraft = () => {
-    createJob(0);
+    createJob('Draft');
   };
 
   const handlePublish = () => {
-    createJob(1);
+    createJob('Published');
   };
 
   return (
@@ -227,11 +225,9 @@ export default function CreateJob() {
                 onChange={handleChange}
                 required
               >
-                <option value={0}>Entry Level</option>
-                <option value={1}>Mid Level</option>
-                <option value={2}>Senior Level</option>
-                <option value={3}>Lead Level</option>
-                <option value={4}>Executive</option>
+                <option value="Entry">Entry Level</option>
+                <option value="Mid">Mid Level</option>
+                <option value="Senior">Senior Level</option>
               </select>
             </div>
 

@@ -9,7 +9,7 @@ class Api {
       ...options.headers,
     };
 
-    // Grab the stored token using the key name 'token'
+    // Only add auth header if a token is available
     const token = localStorage.getItem('token');
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
@@ -21,13 +21,24 @@ class Api {
     };
 
     try {
+      console.log('API request:', options.method, endpoint);
       const response = await fetch(url, config);
-      
+      console.log('API response status:', response.status);
+
+      if (response.status === 401 && !endpoint.startsWith('/api/auth/')) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.assign('/login');
+      }
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
-      const data = await response.json();
+
+      const text = await response.text();
+      if (!text) return null;
+
+      const data = JSON.parse(text);
       return data;
     } catch (error) {
       console.error('API request failed:', error);
@@ -97,6 +108,10 @@ class Api {
     return this.delete(`/api/jobs/${jobId}`);
   }
 
+  async applyForJob(jobId) {
+    return this.post(`/api/jobs/${jobId}/applications`);
+  }
+
   // Application-related endpoints
   async getApplications() {
     return this.get('/api/applications');
@@ -108,6 +123,13 @@ class Api {
 
   async updateApplicationStatus(jobId, applicantId, statusData) {
     return this.patch(`/api/applications/${jobId}/${applicantId}/status`, statusData);
+  }
+
+  async getApplicant(applicantId, jobId) {
+    const applications = await this.getApplications();
+    const applicant = applications.find(application => application.applicantId === applicantId && (!jobId || application.jobId === jobId));
+    if (!applicant) throw new Error('Applicant not found');
+    return applicant;
   }
 
   // Auth endpoints

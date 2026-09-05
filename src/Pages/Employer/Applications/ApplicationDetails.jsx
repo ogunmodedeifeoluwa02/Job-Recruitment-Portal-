@@ -5,10 +5,12 @@ import './ApplicationDetails.css';
 
 export default function ApplicationDetails() {
   const navigate = useNavigate();
-  const { id } = useParams();
+  const { jobId, applicantId } = useParams();
   const [application, setApplication] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [actionError, setActionError] = useState('');
 
   useEffect(() => {
     const loadApplication = async () => {
@@ -17,7 +19,7 @@ export default function ApplicationDetails() {
       try {
         // Load all applications and find the specific one by ID
         const applicationsData = await api.getApplications();
-        const foundApplication = applicationsData?.find(app => app.id === id);
+        const foundApplication = applicationsData.find(app => app.jobId === jobId && app.applicantId === applicantId);
         
         if (foundApplication) {
           setApplication(foundApplication);
@@ -27,13 +29,12 @@ export default function ApplicationDetails() {
       } catch (err) {
         console.error('Failed to load application:', err);
         setError('Failed to load application');
-      } finally {
-        setLoading(false);
       }
+      setLoading(false);
     };
 
     loadApplication();
-  }, [id]);
+  }, [jobId, applicantId]);
 
   if (loading) {
     return (
@@ -73,9 +74,16 @@ export default function ApplicationDetails() {
     );
   }
 
-  const handleAction = (actionType) => {
-    console.log(`Application ${actionType} for applicant:`, application.id);
-    navigate('/employer/applications');
+  const handleAction = async (status) => {
+    setSaving(true);
+    setActionError('');
+    try {
+      await api.updateApplicationStatus(jobId, applicantId, { status });
+      navigate('/employer/applications');
+    } catch (err) {
+      setActionError(err.message);
+    }
+    setSaving(false);
   };
 
   return (
@@ -104,28 +112,32 @@ export default function ApplicationDetails() {
         </div>
 
         <div className="card">
+          {actionError && <p role="alert" style={{ color: '#dc2626' }}>{actionError}</p>}
           <div className="card-header">
             <div className="avatar-large">
-              {application.name?.split(' ').map(n => n[0]).join('')}
+              {application.applicantName.split(' ').map(n => n[0]).join('')}
             </div>
             <div className="applicant-info">
-              <h2>{application.name}</h2>
-              <p className="applicant-subtitle">{application.role}</p>
-              <p className="applicant-meta">Applied: {application.appliedDate}</p>
+              <h2>{application.applicantName}</h2>
+              <p className="applicant-subtitle">{application.jobTitle}</p>
+              <p className="applicant-meta">Applied: {new Date(application.appliedAtUtc).toLocaleDateString()}</p>
             </div>
           </div>
 
           <div className="metrics-grid">
             <div className="metric-card">
               <p className="metric-label">Email</p>
-              <p className="metric-value">{application.email}</p>
+              <p className="metric-value">{application.applicantEmail}</p>
             </div>
             <div className="metric-card">
               <p className="metric-label">Phone</p>
-              <p className="metric-value">{application.phone}</p>
+              <p className="metric-value">{'Not available'}</p>
             </div>
           </div>
 
+          <p>Profile and CV coming soon — API work in progress.</p>
+          <Link to={`/employer/applicants/${application.applicantId}?jobId=${application.jobId}`}>View Profile</Link>
+          <Link to={`/employer/applicants/${application.applicantId}/resume?jobId=${application.jobId}`}>View CV</Link>
           <div className="section">
             <h3>Professional Summary</h3>
             <p>{application.summary}</p>
@@ -134,7 +146,7 @@ export default function ApplicationDetails() {
           <div className="section">
             <h3>Skills</h3>
             <div className="skills-container">
-              {application.skills?.map((skill, index) => (
+              {application.skills && application.skills.map((skill, index) => (
                 <span key={index} className="skill-tag">
                   {skill}
                 </span>
@@ -145,17 +157,17 @@ export default function ApplicationDetails() {
           <div className="actions-section">
             <h4>Application Actions</h4>
             <div className="actions-grid">
-              <button onClick={() => handleAction('shortlisted')} className="action-button green">
-                Shortlist Candidate
+              <button disabled={saving} onClick={() => handleAction('Reviewed')} className="action-button green">
+                Mark Reviewed
               </button>
-              <Link to={`/employer/interviews/schedule/${application.id}`} className="action-button blue">
-                Schedule Interview
-              </Link>
-              <Link to={`/employer/hiring/${application.id}`} className="action-button blue">
+              <button disabled={saving} onClick={() => handleAction('Interviewing')} className="action-button blue">
+                Mark Interviewing
+              </button>
+              <Link to={`/employer/hiring/${application.jobId}/${application.applicantId}`} className="action-button blue">
                 Make Hiring Decision
               </Link>
             </div>
-            <button onClick={() => handleAction('rejected')} className="action-button red" style={{ marginTop: '1rem', width: '100%' }}>
+            <button disabled={saving} onClick={() => handleAction('Rejected')} className="action-button red" style={{ marginTop: '1rem', width: '100%' }}>
               Reject Application
             </button>
           </div>

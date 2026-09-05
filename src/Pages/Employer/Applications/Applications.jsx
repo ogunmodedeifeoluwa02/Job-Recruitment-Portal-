@@ -73,31 +73,33 @@ export default function Applications() {
               </thead>
               <tbody>
                 {applications.map((application) => (
-                  <tr key={application.id}>
+                  <tr key={`${application.jobId}-${application.applicantId}`}>
                     <td>
                       <div className="applicant-info">
                         <div className="avatar">
-                          {application.name.split(' ').map(n => n[0]).join('')}
+                          {application.applicantName.split(' ').map(n => n[0]).join('')}
                         </div>
                         <div>
-                          <div className="applicant-name">{application.name}</div>
-                          <div className="applicant-email">{application.email}</div>
+                          <div className="applicant-name">{application.applicantName}</div>
+                          <div className="applicant-email">{application.applicantEmail}</div>
                         </div>
                       </div>
                     </td>
                     <td>
-                      <div className="applicant-detail">{application.role}</div>
+                      <div className="applicant-detail">{application.jobTitle}</div>
                     </td>
                     <td>
-                      <div className="applicant-detail">{application.appliedDate}</div>
+                      <div className="applicant-detail">{new Date(application.appliedAtUtc).toLocaleDateString()}</div>
                     </td>
                     <td>
-                      <span className={`status-badge ${application.stage}`}>
-                        {application.stage.charAt(0).toUpperCase() + application.stage.slice(1)}
+                      <span className={`status-badge ${application.status}`}>
+                        {application.status.charAt(0).toUpperCase() + application.status.slice(1)}
                       </span>
                     </td>
                     <td>
-                      <Link to={`/employer/applications/${application.id}`} className="action-link">
+                      <Link to={`/employer/applicants/${application.applicantId}?jobId=${application.jobId}`} className="action-link">Profile</Link>
+                      <Link to={`/employer/applicants/${application.applicantId}/resume?jobId=${application.jobId}`} className="action-link">CV</Link>
+                      <Link to={`/employer/applications/${application.jobId}/${application.applicantId}`} className="action-link">
                         Review
                       </Link>
                     </td>

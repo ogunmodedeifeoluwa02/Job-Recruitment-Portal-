@@ -1,16 +1,13 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import { Link } from "react-router";
 import Footer from "../../Shared/Footer";
 import Navbar from "../../Shared/Navbar";
 
 function LandingPages() {
-  const [heroVisible, setHeroVisible] = useState(false);
+  const heroVisible = true;
 
   const heroRef = useRef(null);
 
-  useEffect(() => {
-    setHeroVisible(true);
-  }, []);
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-[#151616] text-white">
@@ -55,13 +52,13 @@ function LandingPages() {
 
             {/* CTA buttons */}
             <div className="mt-6 flex flex-wrap gap-3 md:mt-0">
-              <button className="mt-0 rounded-lg bg-[#ff6b2c] px-3 py-3 text-sm font-medium text-[#151616] transition duration-300 hover:-translate-y-1 hover:bg-[#ff7d45]">
+              <Link to="/login" className="mt-0 rounded-lg bg-[#ff6b2c] px-3 py-3 text-sm font-medium text-[#151616] transition duration-300 hover:-translate-y-1 hover:bg-[#ff7d45]">
                 Open TalentDesk →
-              </button>
+              </Link>
 
-              <button className="mt-0 rounded-lg border border-white/20 px-3 py-3 text-sm font-medium text-[#f5f1ea] transition duration-300 hover:-translate-y-1 hover:border-[#ff6b2c]/50 hover:text-[#ff6b2c]">
+              <a href="#pipeline" className="mt-0 rounded-lg border border-white/20 px-3 py-3 text-sm font-medium text-[#f5f1ea] transition duration-300 hover:-translate-y-1 hover:border-[#ff6b2c]/50 hover:text-[#ff6b2c]">
                 How the pipeline works
-              </button>
+              </a>
             </div>
           </div>
         </div>

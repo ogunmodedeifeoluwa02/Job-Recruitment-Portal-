@@ -1,6 +1,54 @@
+import { useEffect, useState } from "react";
+import api from "../../Core/Api";
 import { ShieldCheck } from "lucide-react";
 
 function MyProfile() {
+    const [profile, setProfile] = useState({ headline: "", skills: "", education: "", experience: "" });
+    const [cv, setCv] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
+    const [error, setError] = useState("");
+    const [message, setMessage] = useState("");
+
+    useEffect(() => {
+      async function loadProfile() {
+        try {
+          const data = await api.getProfile();
+          setProfile({
+            headline: data.headline || "",
+            skills: data.skills || "",
+            education: data.education || "",
+            experience: data.experience || ""
+          });
+          setCv(data.cv_url);
+        } catch (error) {
+          setError(error.message);
+        }
+        setLoading(false);
+      }
+      loadProfile();
+    }, []);
+
+    const handleChange = (e) => {
+      setProfile({ ...profile, [e.target.name]: e.target.value });
+      setMessage("");
+    };
+
+    const handleSubmit = async (e) => {
+      e.preventDefault();
+      setSaving(true);
+      setError("");
+      setMessage("");
+      try {
+        await api.updateProfile(profile);
+        console.log("Profile saved successfully");
+        setMessage("Profile saved successfully!");
+      } catch (err) {
+        setError(err.message);
+      }
+      setSaving(false);
+    };
+
 
     return (
         <div className="text-white">
@@ -26,7 +74,7 @@ function MyProfile() {
 
 
   {/* Profile Card */}
-  <div className="w-full max-w-[960px] rounded-2xl border border-white/10 bg-[#191a1a] p-4 sm:p-5">
+  <div className="w-full max-w-[880px] rounded-md border border-white/10 bg-[#191a1a] p-4 sm:p-5">
 
     {/* Card Header */}
     <header className="mb-4 flex items-start justify-between gap-4">
@@ -36,13 +84,17 @@ function MyProfile() {
 
       <div className="shrink-0 rounded-lg border border-white/10 px-2 py-1">
         <p className="text-xs text-gray-500">
-          Resume missing
+          {cv ? "CV attached" : "Resume missing"}
         </p>
       </div>
     </header>
 
 
-    <form className="space-y-3">
+    {loading && <p className="mb-4 text-sm text-gray-400">Loading profile...</p>}
+    {error && <p role="alert" className="mb-4 text-sm text-red-400">{error}</p>}
+    {message && <p role="status" className="mb-4 text-sm text-green-400">{message}</p>}
+    <form onSubmit={handleSubmit} className="space-y-5">
+    <fieldset disabled={loading || saving} className="space-y-5">
 
       {/* Professional Headline */}
       <div>
@@ -56,6 +108,9 @@ function MyProfile() {
         <input
           id="headline"
           name="headline"
+          value={profile.headline}
+          onChange={handleChange}
+          maxLength={200}
           type="text"
           placeholder="e.g. Frontend Engineer"
           required
@@ -76,6 +131,9 @@ function MyProfile() {
         <input
           id="skills"
           name="skills"
+          value={profile.skills}
+          onChange={handleChange}
+          maxLength={2000}
           type="text"
           placeholder="JavaScript, React, Node.js"
           required
@@ -96,6 +154,9 @@ function MyProfile() {
         <input
           id="education"
           name="education"
+          value={profile.education}
+          onChange={handleChange}
+          maxLength={5000}
           type="text"
           placeholder="B.Sc. Computer Science, University of Lagos, 2024"
           required
@@ -116,6 +177,9 @@ function MyProfile() {
         <input
           id="experience"
           name="experience"
+          value={profile.experience}
+          onChange={handleChange}
+          maxLength={10000}
           type="text"
           placeholder="Frontend Intern, Acme Inc — Jun 2023 to Dec 2023"
           required
@@ -133,25 +197,11 @@ function MyProfile() {
           CV / Resume (PDF or Word, max 2MB)
         </label>
 
-        <input
-          id="resume"
-          name="resume"
-          type="file"
-          accept=".pdf,.doc,.docx"
-          required
-          className="w-full cursor-pointer overflow-hidden rounded-xl border border-[#ff6b2c] bg-[#202223] text-xs text-gray-400 outline-none
-          file:mr-3
-          file:border-0
-          file:bg-transparent
-          file:px-3
-          file:py-2
-          file:text-xs
-          file:font-medium
-          file:text-white"
-        />
-
-        <p className="mt-1 text-[10px] text-gray-500">
-          Upload your CV - applications require it.
+        {cv && /^https?:\/\//i.test(cv) && (
+          <a href={cv} target="_blank" rel="noreferrer" className="text-sm text-[#ff6b2c] underline">View current CV</a>
+        )}
+        <p className="mt-1 text-xs text-gray-400">
+          CV upload is not available yet. You can save your profile details above.
         </p>
       </div>
 
@@ -159,11 +209,12 @@ function MyProfile() {
       {/* Save Button */}
       <button
         type="submit"
-        className="rounded-xl bg-[#ff6b2c] px-4 py-2 text-xs font-semibold text-black transition hover:bg-[#ff7b45]"
+        className="rounded-sm bg-[#f57830] px-7 py-3 text-xs font-semibold text-black transition hover:bg-[#ff7b45]"
       >
-        Save Profile
+        {saving ? "Saving..." : "Save Profile"}
       </button>
 
+    </fieldset>
     </form>
   </div>
 

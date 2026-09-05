@@ -5,10 +5,12 @@ import './HiringDecision.css';
 
 export default function HiringDecision() {
   const navigate = useNavigate();
-  const { id } = useParams();
+  const { jobId, applicantId } = useParams();
   const [application, setApplication] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [actionError, setActionError] = useState('');
 
   useEffect(() => {
     const loadApplication = async () => {
@@ -17,7 +19,7 @@ export default function HiringDecision() {
       try {
         // Load all applications and find the specific one by ID
         const applicationsData = await api.getApplications();
-        const foundApplication = applicationsData?.find(app => app.id === id);
+        const foundApplication = applicationsData.find(app => app.jobId === jobId && app.applicantId === applicantId);
         
         if (foundApplication) {
           setApplication(foundApplication);
@@ -27,13 +29,12 @@ export default function HiringDecision() {
       } catch (err) {
         console.error('Failed to load application:', err);
         setError('Failed to load application');
-      } finally {
-        setLoading(false);
       }
+      setLoading(false);
     };
 
     loadApplication();
-  }, [id]);
+  }, [jobId, applicantId]);
 
   if (loading) {
     return (
@@ -54,7 +55,7 @@ export default function HiringDecision() {
     );
   }
 
-  if (error || !applicant) {
+  if (error || !application) {
     return (
       <div className="hiring-decision">
         <nav>
@@ -74,23 +75,29 @@ export default function HiringDecision() {
   }
 
   const handleHire = async () => {
+    setSaving(true);
+    setActionError('');
     try {
       await api.updateApplicationStatus(application.jobId, application.applicantId, { status: 'Hired' });
       navigate('/employer/applications');
     } catch (err) {
       console.error('Failed to hire applicant:', err);
-      alert('Failed to update application status');
+      setActionError(err.message);
     }
+    setSaving(false);
   };
 
   const handleReject = async () => {
+    setSaving(true);
+    setActionError('');
     try {
       await api.updateApplicationStatus(application.jobId, application.applicantId, { status: 'Rejected' });
       navigate('/employer/applications');
     } catch (err) {
       console.error('Failed to reject applicant:', err);
-      alert('Failed to update application status');
+      setActionError(err.message);
     }
+    setSaving(false);
   };
 
   return (
@@ -119,16 +126,17 @@ export default function HiringDecision() {
         </div>
 
         <div className="card">
+          {actionError && <p role="alert" style={{ color: '#dc2626' }}>{actionError}</p>}
           <h2>Hiring Decision</h2>
 
           <div className="card-header">
             <div className="avatar-large">
-              {application.applicantName?.split(' ').map(n => n[0]).join('')}
+              {application.applicantName.split(' ').map(n => n[0]).join('')}
             </div>
             <div className="applicant-info">
               <p className="applicant-name">{application.applicantName}</p>
               <p className="applicant-subtitle">{application.jobTitle}</p>
-              <p className="applicant-meta">Applied: {application.appliedDate}</p>
+              <p className="applicant-meta">Applied: {new Date(application.appliedAtUtc).toLocaleDateString()}</p>
             </div>
           </div>
 
@@ -143,6 +151,9 @@ export default function HiringDecision() {
             </div>
           </div>
 
+          <p>Profile and CV coming soon — API work in progress.</p>
+          <Link to={`/employer/applicants/${application.applicantId}?jobId=${application.jobId}`}>View Profile</Link>
+          <Link to={`/employer/applicants/${application.applicantId}/resume?jobId=${application.jobId}`}>View CV</Link>
           <div className="section">
             <h3>Professional Summary</h3>
             <p>{application.summary || 'No summary provided'}</p>
@@ -151,7 +162,7 @@ export default function HiringDecision() {
           <div className="section">
             <h3>Skills</h3>
             <div className="skills-container">
-              {application.skills?.map((skill, index) => (
+              {application.skills && application.skills.map((skill, index) => (
                 <span key={index} className="skill-tag">
                   {skill}
                 </span>
@@ -172,7 +183,7 @@ export default function HiringDecision() {
                 <p className="decision-description green">
                   This candidate has met all requirements and is recommended for hire.
                 </p>
-                <button onClick={handleHire} className="decision-button green">
+                <button disabled={saving} onClick={handleHire} className="decision-button green">
                   Confirm Hire
                 </button>
               </div>
@@ -187,7 +198,7 @@ export default function HiringDecision() {
                 <p className="decision-description red">
                   This candidate does not meet the requirements for this position.
                 </p>
-                <button onClick={handleReject} className="decision-button red">
+                <button disabled={saving} onClick={handleReject} className="decision-button red">
                   Reject Application
                 </button>
               </div>

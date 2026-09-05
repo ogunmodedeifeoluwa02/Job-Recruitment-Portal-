@@ -38,8 +38,8 @@ export default function JobDetails() {
   };
 
   const formatSalary = (salary) => {
-    if (!salary) return 'N/A';
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(salary);
+    if (salary == null) return 'Not specified';
+    return Number(salary).toLocaleString();
   };
 
   if (loading) {

@@ -1,24 +1,25 @@
-import { LogOut, User } from "lucide-react"
+import { User } from "lucide-react"
 import { Search } from "lucide-react"
 import { FileText } from "lucide-react"
 import { TextAlignStart } from "lucide-react"
-import { NavLink } from "react-router";
+import { Link } from "react-router";
+import logo from "../assets/logo.svg";
 
 function DashboardNav({activeTab, setActiveTab}) {
 
   // Get logged-in user from localStorage (API returns fullname, not name)
   const storedUser = localStorage.getItem("user");
-  const raw = storedUser ? JSON.parse(storedUser) : null;
+  const raw = JSON.parse(storedUser);
   const user = raw
-    ? { name: raw.fullname || raw.name, email: raw.email }
-    : { name: "Ifeoluwa Esther", email: "ogunmodedeifeoluwa02@gmail.com" };
+    ? { name: raw.fullname, email: raw.email }
+    : { name: "Job Seeker", email: "" };
 
 
   // Create initials from user's name
   const getInitials = (name) => {
     if (!name) return "";
 
-    const names = name.trim().split(" ");
+    const names = name.split(/\s+/);
 
     if (names.length === 1) {
       return names[0][0].toUpperCase();
@@ -31,9 +32,9 @@ function DashboardNav({activeTab, setActiveTab}) {
   };
 
 
-  const navLinkStyle = ({ isActive }) =>
-    `flex items-center gap-1.5 border-b-2 py-3 text-[10px] transition ${
-      isActive
+  const navLinkStyle = (tab) =>
+    `flex items-center gap-1.5 border-b-2 py-3 text-[11px] transition ${
+      activeTab === tab
         ? "border-[#ff6b2c] font-semibold text-white"
         : "border-transparent text-gray-400 hover:text-white"
     }`;
@@ -49,7 +50,7 @@ function DashboardNav({activeTab, setActiveTab}) {
         <div className="flex items-center gap-2">
 
           <img
-            src="/src/assets/logo.svg"
+            src={logo}
             alt="TalentDesk Logo"
             className="h-10 w-10 object-contain"
           />
@@ -83,18 +84,18 @@ function DashboardNav({activeTab, setActiveTab}) {
 
             {/* Initials */}
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#29295c] text-[11px] font-bold text-white">
-              {getInitials(user?.name)}
+              {getInitials(user.name)}
             </div>
 
 
             {/* Name + Email */}
             <div className="hidden leading-tight sm:block">
               <p className="text-[11px] font-semibold text-white">
-                {user?.name}
+                {user.name}
               </p>
 
               <p className="text-[9px] uppercase text-gray-500">
-                {user?.email}
+                {user.email}
               </p>
             </div>
 
@@ -102,9 +103,9 @@ function DashboardNav({activeTab, setActiveTab}) {
 
 
           {/* Logout */}
-          <button className="text-[11px] font-semibold text-white transition hover:text-[#ff6b2c]">
+          <Link to="/logout" className="text-[11px] font-semibold text-white transition hover:text-[#ff6b2c]">
             Log Out
-          </button>
+          </Link>
 
         </div>
 
@@ -112,45 +113,45 @@ function DashboardNav({activeTab, setActiveTab}) {
 
 
       {/* ================= SECOND NAV ================= */}
-      <div className="mx-auto flex w-full max-w-[1260px] items-center justify-between px-5">
+      <div className="mx-auto flex w-full max-w-[1180px] items-center justify-between px-3">
 
         {/* Left navigation */}
         <div className="flex items-center gap-5">
 
-          <NavLink
+          <button type="button"
             onClick={()=>setActiveTab("search-jobs")}
-            className={navLinkStyle}
+            className={navLinkStyle("search-jobs")}
           >
             <Search size={13} strokeWidth={1.8}/>
             <span>Search Jobs</span>
-          </NavLink>
+          </button>
 
 
-          <NavLink
+          <button type="button"
             onClick={()=>setActiveTab("my-applications")}
-            className={navLinkStyle}
+            className={navLinkStyle("my-applications")}
           >
             <FileText size={13} strokeWidth={1.8}/>
             <span>My Applications</span>
-          </NavLink>
+          </button>
 
 
-          <NavLink
+          <button type="button"
           onClick={()=>setActiveTab("my-profile")}
-            className={navLinkStyle}
+            className={navLinkStyle("my-profile")}
           >
             <User size={13} strokeWidth={1.8}/>
             <span>My Profile</span>
-          </NavLink>
+          </button>
 
         </div>
 
 
         {/* Developer tools */}
-        <button className="flex items-center gap-1.5 py-3 text-[10px] text-gray-400 transition hover:text-white">
+        <a href="https://jobportal.collinswilson.com/swagger/index.html" target="_blank" rel="noreferrer" className="hidden sm:flex items-center gap-1.5 py-3 text-[10px] text-gray-400 transition hover:text-white">
           <TextAlignStart size={13} />
           <span>Developer Tools</span>
-        </button>
+        </a>
 
       </div>
 

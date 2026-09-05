@@ -11,50 +11,49 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
-  const [role, setRole] = useState("");
+  const [role, setRole] = useState("job-seeker");
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate()
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     console.log("active-tab", activeTab)
 
     if (activeTab === "register") {
       console.log("userdata", {
         email,
-        password,
         fullname: name,
-        account_type: role === 'job-seeker' ? 0 : 1,
+        account_type: role === 'job-seeker' ? 'JobSeeker' : 'Employer',
       });
       try {
         const data = await registerUser({
           email,
           password,
           fullname: name,
-          account_type: role === 'job-seeker' ? 0 : 1,
+          account_type: role === 'job-seeker' ? 'JobSeeker' : 'Employer',
         });
 
-        console.log("Account created successfully:", data);
+        console.log("Account created successfully:", data.message);
         // register returns no token — auto-login to get jwt_token
         const loginData = await loginUser({ email, password });
-        console.log("Auto-login successful:", loginData);
-        localStorage.setItem('token', loginData?.jwt_token || loginData?.token || '');
-        localStorage.setItem('user', JSON.stringify(loginData?.user || null));
+        console.log("Auto-login successful");
+        localStorage.setItem('token', loginData.jwt_token);
+        localStorage.setItem('user', JSON.stringify(loginData.user));
 
         alert("Account creation successful!")
 
         if (role === 'job-seeker') {
           navigate("/jobseekerdashboard");
         } else {
-          navigate("/employerdashboard")
+          navigate("/employer")
         }
       } catch (error) {
         console.error("Registration error:", error);
 
         alert(
-          error?.errors?.Password?.[0] ||
-          error?.message ||
-          'An unexpected error occurred'
+          error.message
         );
 
 
@@ -63,29 +62,27 @@ function Login() {
 
     } else {
       try {
-        console.log("Login data:", {
-          email,
-          password,
-        });
+        console.log("Login request sent");
 
         const data = await loginUser({
           email,
           password,
         });
 
-        console.log("Login successful:", data);
-        localStorage.setItem('token', data?.jwt_token || data?.token || '');
-        localStorage.setItem('user', JSON.stringify(data?.user || null));
+        console.log("Login successful");
+        localStorage.setItem('token', data.jwt_token);
+        localStorage.setItem('user', JSON.stringify(data.user));
 
         alert("login successful!")
 
-        navigate("/jobseekerdashboard");
+        navigate(data.user.account_type === "Employer" ? "/employer" : "/jobseekerdashboard");
 
       } catch (error) {
         console.error("Login error:", error);
         alert(error.message);
       }
     }
+    setLoading(false);
   };
 
   const API_URL = "https://jobportal.collinswilson.com/api";
@@ -103,11 +100,11 @@ function Login() {
     let data;
     try {
       data = text ? JSON.parse(text) : {};
-    } catch (e) {
+    } catch {
       data = { raw: text };
     }
 
-    console.log('Register response status:', response.status, 'body:', data);
+    console.log('Register response status:', response.status);
 
     if (!response.ok) {
       throw new Error(data.message || data.raw || `Registration failed (${response.status})`);
@@ -130,12 +127,12 @@ function Login() {
   let data;
   try {
     data = text ? JSON.parse(text) : {};
-  } catch (e) {
+  } catch {
     data = { raw: text };
   }
 
   console.log("Login status:", response.status);
-  console.log("Login response:", data);
+  console.log("Login account type:", data.user && data.user.account_type);
 
   if (!response.ok) {
     throw new Error(data.message || data.raw || `Login failed (${response.status})`);
@@ -250,6 +247,7 @@ function Login() {
             {/* Login Button */}
             <button
               type="submit"
+              disabled={loading}
               className="mt-5 w-full rounded-xl bg-[#ff6b2c] py-3 text-sm font-semibold text-[#151616] transition hover:bg-[#ff7d45]"
             >
               Log In
@@ -296,6 +294,7 @@ function Login() {
                     type="text"
                     placeholder="Enter your full-name"
                     autoComplete="name"
+                    required
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     className="mt-2 w-full rounded-xl border border-white/10 bg-[#202223] px-4 py-3 text-sm text-white outline-none placeholder:text-gray-500 focus:border-[#ff6b2c]"
@@ -313,6 +312,7 @@ function Login() {
                     type="email"
                     placeholder="you@example.com"
                     autoComplete="email"
+                    required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="mt-2 w-full rounded-xl border border-white/10 bg-[#202223] px-4 py-3 text-sm text-white outline-none placeholder:text-gray-500 focus:border-[#ff6b2c]"
@@ -330,6 +330,7 @@ function Login() {
                     type="password"
                     placeholder="••••••••"
                     autoComplete="current-password"
+                    required
                     value={password}
                     minLength={8}
                     onChange={(e) => setPassword(e.target.value)}
@@ -337,6 +338,7 @@ function Login() {
                 </div>
                 <button
                   type="submit"
+              disabled={loading}
                   className="mt-5 w-full rounded-xl bg-[#ff6b2c] py-3 text-sm font-semibold text-[#151616] transition hover:bg-[#ff7d45]"
 
                 >
@@ -351,12 +353,13 @@ function Login() {
         {/* Demo Accounts */}
         <div className="mt-5 border-t border-white/10 pt-5">
           <p className="text-xs text-gray-400">
-            Demo accounts · password demo1234
+            Create an account
           </p>
 
           <div className="mt-3 flex gap-2">
             <button
               type="button"
+              onClick={() => { setActiveTab("register"); setRole("job-seeker"); }}
               className="rounded-full border border-white/10 px-3 py-1 text-xs text-gray-300 transition hover:border-[#ff6b2c]/50 hover:text-[#ff6b2c]"
             >
               Job Seeker
@@ -364,6 +367,7 @@ function Login() {
 
             <button
               type="button"
+              onClick={() => { setActiveTab("register"); setRole("Employer"); }}
               className="rounded-full border border-white/10 px-3 py-1 text-xs text-gray-300 transition hover:border-[#ff6b2c]/50 hover:text-[#ff6b2c]"
             >
               Employer
@@ -374,8 +378,7 @@ function Login() {
         {/* Information Box */}
         <div className="mt-5 rounded-xl border border-white/10 bg-[#202223] p-4">
           <p className="text-xs leading-5 text-gray-300">
-            A private workspace for hiring teams. Explore both roles with the
-            demo accounts, or register fresh. Developer tools in the top
+            A private workspace for hiring teams. Register as a job seeker or employer. Developer tools in the top
             navigation inspect the API console.
           </p>
 

@@ -32,7 +32,7 @@ export default function JobListings() {
 
   const getStatusClass = (status) => {
     switch (status?.toLowerCase()) {
-      case 'active': return 'active';
+      case 'published': return 'active';
       case 'draft': return 'draft';
       case 'closed': return 'closed';
       default: return 'closed';
@@ -100,20 +100,20 @@ export default function JobListings() {
             All
           </button>
           <button
-            onClick={() => setFilter('active')}
-            className={`filter-button ${filter === 'active' ? 'active' : ''}`}
+            onClick={() => setFilter('Published')}
+            className={`filter-button ${filter === 'Published' ? 'active' : ''}`}
           >
-            Active
+            Published
           </button>
           <button
-            onClick={() => setFilter('draft')}
-            className={`filter-button ${filter === 'draft' ? 'active' : ''}`}
+            onClick={() => setFilter('Draft')}
+            className={`filter-button ${filter === 'Draft' ? 'active' : ''}`}
           >
             Draft
           </button>
           <button
-            onClick={() => setFilter('closed')}
-            className={`filter-button ${filter === 'closed' ? 'active' : ''}`}
+            onClick={() => setFilter('Closed')}
+            className={`filter-button ${filter === 'Closed' ? 'active' : ''}`}
           >
             Closed
           </button>

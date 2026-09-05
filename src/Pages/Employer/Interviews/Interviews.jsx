@@ -1,7 +1,25 @@
 import { Link } from 'react-router';
+import { useState, useEffect } from 'react';
+import api from '../../../Core/Api';
 import './Interviews.css';
 
 export default function Interviews() {
+  const [applications, setApplications] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  useEffect(() => {
+    async function getInterviews() {
+      try {
+        const data = await api.getApplications();
+        const interviews = data.filter(application => application.status === 'Interviewing');
+        setApplications(interviews);
+      } catch (error) {
+        setError(error.message);
+      }
+      setLoading(false);
+    }
+    getInterviews();
+  }, []);
   return (
     <div className="interviews">
       <nav>
@@ -27,6 +45,12 @@ export default function Interviews() {
 
         <div className="table-container" style={{ padding: '2rem', textAlign: 'center' }}>
           <div style={{ color: '#8A8D9B', marginBottom: '1rem' }}>
+            {loading && <p>Loading...</p>}
+            {error && <p role="alert">{error}</p>}
+            {applications.map(application => <p key={`${application.jobId}-${application.applicantId}`} style={{ marginBottom: '1rem' }}>
+              <Link to={`/employer/applications/${application.jobId}/${application.applicantId}`}>{application.applicantName} · {application.jobTitle}</Link>
+            </p>)}
+            {!loading && !error && applications.length === 0 && <p>No applications are marked Interviewing.</p>}
             <p>Interview scheduling feature is not yet available.</p>
             <p>Please use the Applicants page to manage application status and hiring decisions.</p>
           </div>

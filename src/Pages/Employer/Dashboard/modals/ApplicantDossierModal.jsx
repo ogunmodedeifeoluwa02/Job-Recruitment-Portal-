@@ -1,3 +1,4 @@
+import { Link } from 'react-router';
 import './ApplicantDossierModal.css';
 
 export default function ApplicantDossierModal({ candidate, isOpen, onClose }) {
@@ -6,14 +7,15 @@ export default function ApplicantDossierModal({ candidate, isOpen, onClose }) {
   return (
     <div className="dossier-backdrop" onClick={onClose}>
       <div className="dossier-container" onClick={(e) => e.stopPropagation()}>
+        <p style={{ padding: '1rem' }}>Profile and CV coming soon — API work in progress.</p>
         <div className="dossier-header">
           <div className="header-left">
             <p className="category-label">CANDIDATE DOSSIER</p>
-            <h2 className="candidate-title">{candidate.name}</h2>
-            <p className="candidate-email">{candidate.email}</p>
+            <h2 className="candidate-title">{candidate.applicantName}</h2>
+            <p className="candidate-email">{candidate.applicantEmail}</p>
           </div>
           <div className="header-right">
-            <span className="status-badge">SUBMITTED</span>
+            <span className="status-badge">{candidate.status}</span>
           </div>
         </div>
 
@@ -24,15 +26,15 @@ export default function ApplicantDossierModal({ candidate, isOpen, onClose }) {
             <div className="info-grid">
               <div className="info-item">
                 <p className="info-label">ROLE</p>
-                <p className="info-value">{candidate.role}</p>
+                <p className="info-value">{candidate.jobTitle}</p>
               </div>
               <div className="info-item">
                 <p className="info-label">LOCATION</p>
-                <p className="info-value">{candidate.location || "Lagos, Nigeria"}</p>
+                <p className="info-value">{candidate.location}</p>
               </div>
               <div className="info-item">
                 <p className="info-label">APPLIED</p>
-                <p className="info-value">{candidate.appliedTime || "10d ago"}</p>
+                <p className="info-value">{new Date(candidate.appliedAtUtc).toLocaleDateString()}</p>
               </div>
             </div>
           </div>
@@ -43,11 +45,11 @@ export default function ApplicantDossierModal({ candidate, isOpen, onClose }) {
             <div className="info-grid">
               <div className="info-item">
                 <p className="info-label">HEADLINE</p>
-                <p className="info-value">{candidate.headline || "Full-Stack Developer"}</p>
+                <p className="info-value">{candidate.headline}</p>
               </div>
               <div className="info-item">
                 <p className="info-label">SKILLS</p>
-                <p className="info-value">{candidate.skills || "Node.js, Express, React, PostgreSQL"}</p>
+                <p className="info-value">{candidate.skills}</p>
               </div>
             </div>
           </div>
@@ -59,22 +61,22 @@ export default function ApplicantDossierModal({ candidate, isOpen, onClose }) {
           <div className="record-info">
             <div className="record-item">
               <p className="record-label">Education</p>
-              <p className="record-value">{candidate.education || "B.Eng. Software Engineering, Covenant University (2024)"}</p>
+              <p className="record-value">{candidate.education}</p>
             </div>
             <div className="record-item">
               <p className="record-label">Work experience</p>
-              <p className="record-value">{candidate.workExperience || "Backend Intern, Paykobo (Jan 2024 - Jul 2024)"}</p>
+              <p className="record-value">{candidate.workExperience}</p>
             </div>
           </div>
         </div>
 
         <div className="dossier-footer">
           <div className="footer-left">
-            <button className="action-pill secondary">Read CV</button>
-            <button className="action-pill secondary">View activity</button>
+            <Link to={`/employer/applicants/${candidate.applicantId}/resume?jobId=${candidate.jobId}`} className="action-pill secondary">Read CV</Link>
+            <Link to={`/employer/applicants/${candidate.applicantId}?jobId=${candidate.jobId}`} className="action-pill secondary">View Profile</Link>
           </div>
           <div className="footer-right">
-            <button className="action-pill primary">Hire / reject</button>
+            <Link to={`/employer/hiring/${candidate.jobId}/${candidate.applicantId}`} className="action-pill primary">Hire / reject</Link>
             <button className="action-pill close" onClick={onClose}>Close</button>
           </div>
         </div>

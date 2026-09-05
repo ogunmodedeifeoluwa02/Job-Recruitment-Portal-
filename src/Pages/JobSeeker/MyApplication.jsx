@@ -1,6 +1,26 @@
+import { useEffect, useState } from "react";
+import api from "../../Core/Api";
 import { Search } from "lucide-react";
 
 function MyApplications() {
+  const [applications, setApplications] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    async function getApplications() {
+      try {
+        const data = await api.getMyApplications();
+        console.log("Applications loaded:", data.length);
+        setApplications(data);
+      } catch (error) {
+        setError(error.message);
+      }
+      setLoading(false);
+    }
+    getApplications();
+  }, []);
+
   return (
     <div className="text-white">
 
@@ -13,12 +33,24 @@ function MyApplications() {
           <h2 className="text-sm font-bold tracking-[0.12em] text-[#9ebcff]">
             MY APPLICATIONS
             <span className="mx-2">•</span>
-            0
+            {applications.length}
           </h2>
         </div>
 
 
+        {loading && <p>Loading applications...</p>}
+        {error && <p role="alert">{error}</p>}
+        {applications.map((application) => (
+          <div key={`${application.jobId}-${application.applicantId}`} className="my-4 border border-white/20 p-5">
+            <h3>{application.jobTitle}</h3>
+            <p>Applied: {new Date(application.appliedAtUtc).toLocaleDateString()}</p>
+            <p>Updated: {new Date(application.updatedAtUtc).toLocaleDateString()}</p>
+            <p>{application.status}</p>
+          </div>
+        ))}
+
         {/* Empty State */}
+        {!loading && !error && applications.length === 0 && (
         <div className="flex flex-1 flex-col items-center justify-center text-center">
 
           {/* Search Icon */}
@@ -41,6 +73,7 @@ function MyApplications() {
 
         </div>
 
+        )}
       </main>
 
 

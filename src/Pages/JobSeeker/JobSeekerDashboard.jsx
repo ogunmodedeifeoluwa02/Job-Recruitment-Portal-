@@ -1,13 +1,14 @@
-import { useState } from "react";
+import { useSearchParams } from "react-router";
 import DashboardNav from "../../Shared/DashboardNav";
-import { ShieldCheck } from "lucide-react";
 import MyProfile from "./MyProfile";
 import MyApplications from "./MyApplication";
 import SearchJobs from "./SearchJobs";
 
 function JobSeekerDashBoard() {
-    const [activeTab, setActiveTab] = useState("search-jobs");
-    console.log(activeTab)
+    const [params, setParams] = useSearchParams();
+    const activeTab = params.get("tab") || "search-jobs";
+    console.log(activeTab);
+    const setActiveTab = (tab) => setParams({ tab });
 
     return (
         <div className="min-h-screen bg-[#151616] flex flex-col">

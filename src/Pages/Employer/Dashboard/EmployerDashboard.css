@@ -344,3 +344,41 @@
   color: #8A8D9B;
   font-size: 0.75rem;
 }
+
+.employer-dashboard .hero-title {
+  font-family: Georgia, serif;
+  font-size: 35px;
+}
+
+.employer-dashboard .hero-action-button {
+  border-radius: 3px;
+  padding: 9px 19px;
+}
+
+.employer-dashboard .metric-item:nth-child(2) {
+  padding-top: 9px;
+}
+
+.employer-dashboard .metric-item:nth-child(3) .metric-value {
+  font-size: 25px;
+  color: #efaa65;
+}
+
+.employer-dashboard .grid-card {
+  border-radius: 4px;
+}
+
+.employer-dashboard .upcoming-conversations {
+  border-radius: 17px;
+  background: #202326;
+}
+
+.employer-dashboard .card-title {
+  margin-bottom: 23px;
+  letter-spacing: 0.5px;
+}
+
+.employer-dashboard .dossier-button {
+  border-radius: 2px;
+  text-decoration: underline;
+}

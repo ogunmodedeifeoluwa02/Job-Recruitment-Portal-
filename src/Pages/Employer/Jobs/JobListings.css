@@ -227,3 +227,22 @@
 .job-listings .action-link:hover {
   color: #c94a22;
 }
+
+.job-listings .create-button {
+  border-radius: 2px;
+  padding: 10px 22px;
+}
+
+.job-listings .filter-button {
+  border-radius: 3px;
+}
+
+.job-listings .filter-button:nth-child(2) {
+  border-radius: 20px;
+  padding-left: 23px;
+  padding-right: 23px;
+}
+
+.job-listings .action-link {
+  text-decoration: underline;
+}
