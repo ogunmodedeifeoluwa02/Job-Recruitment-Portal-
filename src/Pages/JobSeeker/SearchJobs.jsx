@@ -304,6 +304,27 @@ function SearchJobs() {
           </>
         )}
       </dialog>
+
+            <footer className="mx-auto w-full max-w-[1260px] border-t border-[#303130] px-5 py-6 mt-3">
+
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs">
+
+          <span className="font-semibold text-white">
+            TalentDesk
+          </span>
+
+          <span className="text-[#aaa8a3]">
+            The hiring workspace with a clear next step.
+          </span>
+
+          <span className="text-[#aaa8a3]">
+            Domain · Application · Infrastructure · API
+          </span>
+
+        </div>
+
+      </footer>
+
     </div>
   );
 }
