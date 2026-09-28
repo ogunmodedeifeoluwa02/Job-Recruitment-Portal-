@@ -1,10 +1,16 @@
-import { Search } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router";
+import { RotateCcw, Search, SearchX, SlidersHorizontal } from "lucide-react";
+import { useEffect, useState } from "react";
 import api from "../../Core/Api";
+import Footer from "../../Shared/Footer";
+import { EmptyState, ErrorState, LoadingSkeleton } from "../../Shared/States";
 import JobCard from "./JobCard";
 
+const EMPLOYMENT_TYPES = ["FullTime", "PartTime", "Contract", "Internship"];
+const EXPERIENCE_LEVELS = ["Entry", "Mid", "Senior"];
+
 function SearchJobs() {
+  // Discovery is public: listings + categories load for everyone.
+  // Only per-user data (my applications) needs a token.
   const [jobs, setJobs] = useState([]);
   const [categories, setCategories] = useState([]);
   const [applications, setApplications] = useState([]);
@@ -18,24 +24,27 @@ function SearchJobs() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [total, setTotal] = useState(0);
+  // No token → no fetch (backend 401s), so start out of the loading state.
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [selectedJob, setSelectedJob] = useState(null);
-  const [applying, setApplying] = useState(false);
-  const [applyError, setApplyError] = useState("");
-  const [message, setMessage] = useState("");
   const [refresh, setRefresh] = useState(0);
-  const dialog = useRef(null);
 
   useEffect(() => {
     async function loadData() {
       try {
-        const categories = await api.getCategories();
-        setCategories(categories);
-        const applications = await api.getMyApplications();
-        setApplications(applications);
-      } catch (error) {
-        setError(error.message);
+        const fetchedCategories = await api.getCategories();
+        setCategories(fetchedCategories);
+      } catch {
+        setError("Unable to load filters right now.");
+      }
+      // Per-user applications still need login; skip quietly without one
+      // (calling it logged-out would trigger a 401 redirect).
+      if (!localStorage.getItem("token")) return;
+      try {
+        const fetchedApplications = await api.getMyApplications();
+        setApplications(fetchedApplications);
+      } catch {
+        // Applications are a bonus here; listings still work.
       }
     }
     loadData();
@@ -51,23 +60,20 @@ function SearchJobs() {
         setJobs(data.items);
         setTotal(data.totalItems);
         setTotalPages(data.totalPages);
-      } catch (error) {
-        setError(error.message);
+      } catch {
+        setError("Unable to load jobs right now.");
       }
       setLoading(false);
     }
     getJobs();
   }, [query, page, refresh]);
 
-  const handleSearch = (e) => {
-    e.preventDefault();
+  const applyFilters = (next) => {
     const params = new URLSearchParams();
-    if (filters.Search) params.set("Search", filters.Search);
-    if (filters.CategoryId) params.set("CategoryId", filters.CategoryId);
-    if (filters.EmploymentType)
-      params.set("EmploymentType", filters.EmploymentType);
-    if (filters.ExperienceLevel)
-      params.set("ExperienceLevel", filters.ExperienceLevel);
+    if (next.Search) params.set("Search", next.Search);
+    if (next.CategoryId) params.set("CategoryId", next.CategoryId);
+    if (next.EmploymentType) params.set("EmploymentType", next.EmploymentType);
+    if (next.ExperienceLevel) params.set("ExperienceLevel", next.ExperienceLevel);
     setLoading(true);
     setError("");
     setPage(1);
@@ -75,62 +81,31 @@ function SearchJobs() {
     setRefresh(refresh + 1);
   };
 
-  const handleView = (job) => {
-    setSelectedJob(job);
-    setApplyError("");
-    setMessage("");
-    dialog.current.showModal();
+  const handleSearch = (e) => {
+    e.preventDefault();
+    applyFilters(filters);
   };
 
-  const handleApply = async () => {
-    setApplying(true);
-    setApplyError("");
-    try {
-      await api.applyForJob(selectedJob.id);
-      setApplications([
-        ...applications,
-        { jobId: selectedJob.id, status: "Open" },
-      ]);
-      setMessage("Application sent successfully!");
-    } catch (err) {
-      setApplyError(err.message);
-    }
-    setApplying(false);
+  const clearFilters = () => {
+    const cleared = { Search: "", CategoryId: "", EmploymentType: "", ExperienceLevel: "" };
+    setFilters(cleared);
+    applyFilters(cleared);
   };
 
-  const inputStyle =
-    "w-full rounded-xl border border-white/10 bg-[#202223] px-3 py-3 text-xs text-white";
-  let applied = false;
-  if (selectedJob) {
-    applied = applications.find(
-      (application) => application.jobId === selectedJob.id,
-    );
-  }
+  const hasActiveFilters = Object.values(filters).some(Boolean);
 
-  return (
-    <div className="mx-auto w-full max-w-[1260px] px-5 py-8 text-white">
-      <div className="mb-5 rounded-2xl border border-white/10 bg-[#202223] p-4 text-sm text-gray-300">
-        Active postings only — find a job and send your application.
-      </div>
-      <form
-        onSubmit={handleSearch}
-        className="mb-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-5"
-      >
-        <input
-          aria-label="Search jobs"
-          placeholder="Keyword (title, description)"
-          value={filters.Search}
-          onChange={(e) => setFilters({ ...filters, Search: e.target.value })}
-          maxLength={200}
-          className={inputStyle}
-        />
+  const filterFields = (
+    <>
+      <div>
+        <label htmlFor="filter-category" className="td-label">
+          Category
+        </label>
         <select
+          id="filter-category"
           aria-label="Category"
           value={filters.CategoryId}
-          onChange={(e) =>
-            setFilters({ ...filters, CategoryId: e.target.value })
-          }
-          className={inputStyle}
+          onChange={(e) => setFilters({ ...filters, CategoryId: e.target.value })}
+          className="td-input"
         >
           <option value="">All categories</option>
           {categories.map((category) => (
@@ -139,192 +114,213 @@ function SearchJobs() {
             </option>
           ))}
         </select>
+      </div>
+      <div>
+        <label htmlFor="filter-type" className="td-label">
+          Employment type
+        </label>
         <select
+          id="filter-type"
           aria-label="Employment type"
           value={filters.EmploymentType}
-          onChange={(e) =>
-            setFilters({ ...filters, EmploymentType: e.target.value })
-          }
-          className={inputStyle}
+          onChange={(e) => setFilters({ ...filters, EmploymentType: e.target.value })}
+          className="td-input"
         >
-          <option value="">All employment types</option>
-          <option value="FullTime">Full-time</option>
-          <option value="PartTime">Part-time</option>
-          <option value="Contract">Contract</option>
-          <option value="Internship">Internship</option>
+          <option value="">All types</option>
+          {EMPLOYMENT_TYPES.map((t) => (
+            <option key={t} value={t}>
+              {t === "FullTime" ? "Full-time" : t === "PartTime" ? "Part-time" : t}
+            </option>
+          ))}
         </select>
+      </div>
+      <div>
+        <label htmlFor="filter-level" className="td-label">
+          Experience
+        </label>
         <select
+          id="filter-level"
           aria-label="Experience level"
           value={filters.ExperienceLevel}
-          onChange={(e) =>
-            setFilters({ ...filters, ExperienceLevel: e.target.value })
-          }
-          className={inputStyle}
+          onChange={(e) => setFilters({ ...filters, ExperienceLevel: e.target.value })}
+          className="td-input"
         >
-          <option value="">All experience levels</option>
-          <option value="Entry">Entry</option>
-          <option value="Mid">Mid</option>
-          <option value="Senior">Senior</option>
+          <option value="">All levels</option>
+          {EXPERIENCE_LEVELS.map((l) => (
+            <option key={l} value={l}>
+              {l}
+            </option>
+          ))}
         </select>
-        <button
-          disabled={loading}
-          className="rounded-lg bg-[#ff6b2c] px-4 py-2 text-sm font-semibold text-black disabled:opacity-50"
-        >
-          Search Jobs
-        </button>
-      </form>
-      {error && (
-        <p role="alert" className="mb-4 text-sm text-red-400">
-          {error}
-        </p>
-      )}
-      <h2 className="mb-3 text-xs font-bold tracking-widest text-[#9ebcff]">
-        OPEN POSITIONS · {total}
-      </h2>
-      {loading ? (
-        <p className="py-10 text-gray-400">Loading jobs...</p>
-      ) : jobs.length === 0 ? (
-        <div className="py-14 text-center text-gray-400">
-          <Search className="mx-auto mb-4" />
-          <p>No jobs found. Try a different search.</p>
-        </div>
-      ) : (
-        jobs.map((job) => (
-          <JobCard
-            key={job.id}
-            job={job}
-            application={applications.find(
-              (application) => application.jobId === job.id,
-            )}
-            onView={handleView}
-          />
-        ))
-      )}
-      {totalPages > 0 && (
-        <div className="mt-6 flex items-center justify-center gap-4 text-sm">
-          <button
-            disabled={page <= 1 || loading}
-            onClick={() => {
-              setLoading(true);
-              setError("");
-              setPage(page - 1);
-            }}
-            className="rounded border border-white/20 px-3 py-2 disabled:opacity-30"
-          >
-            Previous
-          </button>
-          <span>
-            Page {page} of {totalPages}
-          </span>
-          <button
-            disabled={page >= totalPages || loading}
-            onClick={() => {
-              setLoading(true);
-              setError("");
-              setPage(page + 1);
-            }}
-            className="rounded border border-white/20 px-3 py-2 disabled:opacity-30"
-          >
-            Next
-          </button>
-        </div>
-      )}
+      </div>
+    </>
+  );
 
-      <dialog
-        ref={dialog}
-        aria-labelledby="job-title"
-        className="fixed inset-0 m-auto max-h-[85vh] w-[calc(100%-2rem)] max-w-[650px] overflow-y-auto rounded-2xl border border-white/20 bg-[#202223] p-6 text-white backdrop:bg-black/70"
-      >
-        {selectedJob && (
-          <>
-            <h2 id="job-title" className="text-xl font-semibold">
-              {selectedJob.title}
-            </h2>
-            <p className="my-3 text-sm text-gray-400">
-              {selectedJob.location} · {selectedJob.employmentType} ·{" "}
-              {selectedJob.experienceLevel}
-            </p>
-            <p className="text-xs text-gray-400">
-              Closes {new Date(selectedJob.deadline).toLocaleDateString()}
-            </p>
-            <h3 className="mt-5 mb-2 font-semibold">Role</h3>
-            <p className="whitespace-pre-wrap text-sm text-gray-300">
-              {selectedJob.description}
-            </p>
-            <h3 className="mt-5 mb-2 font-semibold">Requirements</h3>
-            <p className="whitespace-pre-wrap text-sm text-gray-300">
-              {selectedJob.requirements}
-            </p>
-            {applyError && (
-              <p role="alert" className="mt-4 text-sm text-red-400">
-                {applyError}
-              </p>
-            )}
-            {message && (
-              <p role="status" className="mt-4 text-sm text-green-400">
-                {message}
-              </p>
-            )}
-            {applied && (
-              <p className="mt-4 text-sm text-[#9ebcff]">
-                Application status: {applied.status}
-              </p>
-            )}
-            <p className="mt-4 text-xs text-gray-400">
-              Check your{" "}
-              <Link
-                onClick={() => dialog.current.close()}
-                to="/jobseekerdashboard?tab=my-profile"
-                className="text-[#ff6b2c] underline"
-              >
-                profile
-              </Link>{" "}
-              before applying.
-            </p>
-            <div className="mt-6 flex justify-end gap-3">
-              <button
-                onClick={() => dialog.current.close()}
-                className="rounded-lg border border-white/20 px-4 py-2 text-sm"
-              >
-                Close
-              </button>
-              <button
-                onClick={handleApply}
-                disabled={
-                  applying ||
-                  !!applied ||
-                  selectedJob.status !== "Published" ||
-                  new Date(selectedJob.deadline) <= new Date()
-                }
-                className="rounded-xl bg-[#ff6b2c] px-4 py-2 text-sm font-semibold text-black disabled:opacity-40"
-              >
-                {applying ? "Applying..." : applied ? "Applied" : "Apply now"}
-              </button>
+  return (
+    <div className="font-jakarta text-white">
+      {/* Discovery hero */}
+      <section className="td-glow border-b border-white/5">
+        <div className="td-animate-in mx-auto w-full max-w-[1260px] px-5 pb-10 pt-12 sm:pt-16">
+          <p className="mb-3 text-xs font-bold uppercase tracking-[0.22em] text-[#ff6b2c]">
+            Job marketplace
+          </p>
+          <h1 className="max-w-2xl font-fraunces text-4xl font-bold leading-[1.05] tracking-tight text-white sm:text-5xl">
+            Discover your next role.
+          </h1>
+          <p className="mt-4 max-w-xl text-[15px] leading-7 text-[#aaa8a3]">
+            Live openings from hiring teams. Search, filter, open a role and
+            apply — all in one flow.
+          </p>
+          <form onSubmit={handleSearch} className="mt-7 flex max-w-2xl gap-2">
+            <div className="relative flex-1">
+              <Search
+                size={16}
+                className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"
+              />
+              <input
+                aria-label="Search jobs"
+                placeholder="Try a title or keyword…"
+                value={filters.Search}
+                onChange={(e) => setFilters({ ...filters, Search: e.target.value })}
+                maxLength={200}
+                className="td-input !rounded-full !py-3.5 !pl-11 !pr-4"
+              />
             </div>
-          </>
-        )}
-      </dialog>
-
-            <footer className="mx-auto w-full max-w-[1260px] border-t border-[#303130] px-5 py-6 mt-3">
-
-        <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs">
-
-          <span className="font-semibold text-white">
-            TalentDesk
-          </span>
-
-          <span className="text-[#aaa8a3]">
-            The hiring workspace with a clear next step.
-          </span>
-
-          <span className="text-[#aaa8a3]">
-            Domain · Application · Infrastructure · API
-          </span>
-
+            <button type="submit" disabled={loading} className="td-btn-primary shrink-0">
+              Search
+            </button>
+          </form>
         </div>
+      </section>
 
-      </footer>
+      <div className="mx-auto w-full max-w-[1260px] px-5 py-8">
+        <div className="grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)]">
+          {/* Filter sidebar (desktop) */}
+          <aside className="hidden lg:block">
+            <form onSubmit={handleSearch} className="td-card sticky top-32 space-y-5 p-5">
+              <div className="flex items-center justify-between">
+                <h2 className="flex items-center gap-2 text-sm font-bold text-white">
+                  <SlidersHorizontal size={15} className="text-[#ff6b2c]" />
+                  Filters
+                </h2>
+                {hasActiveFilters && (
+                  <button
+                    type="button"
+                    onClick={clearFilters}
+                    className="flex items-center gap-1 text-xs font-semibold text-gray-400 transition hover:text-[#ff6b2c]"
+                  >
+                    <RotateCcw size={12} />
+                    Clear
+                  </button>
+                )}
+              </div>
+              {filterFields}
+              <button type="submit" disabled={loading} className="td-btn-primary w-full">
+                Apply filters
+              </button>
+              <p className="text-xs leading-5 text-gray-500">
+                Active postings only — published roles with a future deadline.
+              </p>
+            </form>
+          </aside>
 
+          {/* Mobile filters */}
+          <form
+            onSubmit={handleSearch}
+            className="td-card grid gap-3 p-4 sm:grid-cols-2 lg:hidden"
+          >
+            {filterFields}
+            <div className="flex gap-2 sm:col-span-2">
+              <button type="submit" disabled={loading} className="td-btn-primary flex-1">
+                Apply filters
+              </button>
+              {hasActiveFilters && (
+                <button type="button" onClick={clearFilters} className="td-btn-ghost">
+                  Clear
+                </button>
+              )}
+            </div>
+          </form>
+
+          {/* Results */}
+          <section aria-live="polite" className="min-w-0">
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="text-xs font-bold tracking-[0.18em] text-[#9ebcff]">
+                OPEN POSITIONS{!loading ? ` · ${total}` : ""}
+              </h2>
+              {totalPages > 1 && (
+                <p className="text-xs text-gray-500">
+                  Page {page} of {totalPages}
+                </p>
+              )}
+            </div>
+
+            {loading ? (
+              <LoadingSkeleton rows={3} />
+            ) : error && jobs.length === 0 ? (
+              <ErrorState
+                message={error}
+                onRetry={() => {
+                  setLoading(true);
+                  setError("");
+                  setRefresh(refresh + 1);
+                }}
+              />
+            ) : jobs.length === 0 ? (
+              <EmptyState
+                icon={SearchX}
+                title="No jobs found"
+                hint="Try a different keyword or clear your filters."
+                actionTo={undefined}
+                actionLabel={undefined}
+              />
+            ) : (
+              <div className="td-stagger space-y-4">
+                {jobs.map((job) => (
+                  <JobCard
+                    key={job.id}
+                    job={job}
+                    application={applications.find(
+                      (application) => application.jobId === job.id,
+                    )}
+                  />
+                ))}
+              </div>
+            )}
+
+            {totalPages > 1 && (
+              <div className="mt-8 flex items-center justify-center gap-3">
+                <button
+                  type="button"
+                  disabled={page <= 1 || loading}
+                  onClick={() => {
+                    setLoading(true);
+                    setError("");
+                    setPage(page - 1);
+                  }}
+                  className="td-btn-ghost !px-5 !py-2"
+                >
+                  ← Previous
+                </button>
+                <button
+                  type="button"
+                  disabled={page >= totalPages || loading}
+                  onClick={() => {
+                    setLoading(true);
+                    setError("");
+                    setPage(page + 1);
+                  }}
+                  className="td-btn-ghost !px-5 !py-2"
+                >
+                  Next →
+                </button>
+              </div>
+            )}
+          </section>
+        </div>
+      </div>
+
+      <Footer minimal />
     </div>
   );
 }

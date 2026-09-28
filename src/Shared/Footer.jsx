@@ -1,52 +1,36 @@
-function Footer() {
-  return (
-    <footer className="border-t border-white/10 bg-[#151616] text-[#f5f1ea]">
-      {/* Main footer content */}
-      <div className="mx-auto flex max-w-[1180px] flex-col gap-8 px-6 py-10 md:flex-row md:items-center md:justify-between">
-        {/* Logo + tagline */}
-        <div className="flex items-center gap-3">
-          <img
-            src="./src/assets/logo.svg"
-            alt="TalentDesk Logo"
-            className="h-8 w-8 object-contain"
-          />
+import { Link } from "react-router";
+import logo from "../assets/logo.svg";
 
-          <span className="font-fraunces text-lg font-bold">
+// Compact product footer. Same component everywhere.
+function Footer({ minimal = false }) {
+  return (
+    <footer className="border-t border-white/10 bg-[#151616]">
+      <div className="mx-auto flex w-full max-w-[1260px] flex-col gap-4 px-5 py-8 sm:flex-row sm:items-center sm:justify-between">
+        <Link to="/" className="flex items-center gap-2">
+          <img src={logo} alt="TalentDesk logo" className="h-7 w-7 object-contain" />
+          <span className="font-fraunces text-base font-bold text-[#f5f1ea]">
             Talent<span className="text-[#ff6b2c]">Desk</span>
           </span>
-
-          <span className="hidden text-xs text-gray-500 md:block">
+          <span className="hidden text-xs text-gray-500 md:inline">
             The hiring workspace with a clear next step.
           </span>
-        </div>
+        </Link>
 
-        {/* Footer navigation */}
-        <nav className="flex flex-wrap items-center gap-6 text-xs text-gray-400">
-          <a href="#pipeline" className="transition hover:text-[#ff6b2c]">
-            Pipeline
-          </a>
+        {!minimal && (
+          <nav className="flex flex-wrap items-center gap-x-6 gap-y-2 text-[13px] font-medium text-gray-400">
+            <Link to="/" className="transition hover:text-[#ff6b2c]">
+              Find jobs
+            </Link>
+            <Link to="/home" className="transition hover:text-[#ff6b2c]">
+              Why TalentDesk
+            </Link>
+            <Link to="/login" className="transition hover:text-[#ff6b2c]">
+              Log in
+            </Link>
+          </nav>
+        )}
 
-          <a href="#engineering" className="transition hover:text-[#ff6b2c]">
-            Engineering
-          </a>
-
-          <a href="#proof" className="transition hover:text-[#ff6b2c]">
-            Proof
-          </a>
-
-          <a className="px-4 py-2 transition hover:bg-[#ff6b2c] hover:text-[#151616]">
-            Open the app
-          </a>
-        </nav>
-      </div>
-
-      {/* Bottom copyright */}
-      <div className="border-t border-white/10 w-full">
-        <div className="mx-auto max-w-[1180px] px-6 py-5  flex items-center justify-center">
-          <p className="text-xs text-gray-500">
-            copyright ©️ 2026 TalentDesk · Capstone home
-          </p>
-        </div>
+        <p className="text-xs text-gray-600">© 2026 TalentDesk</p>
       </div>
     </footer>
   );

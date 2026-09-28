@@ -1,64 +1,100 @@
 import { Link } from 'react-router';
 import { useState, useEffect } from 'react';
+import { ArrowRight, CalendarClock, Users } from 'lucide-react';
 import api from '../../../Core/Api';
-import './Interviews.css';
+import PageHeader from '../../../Shared/PageHeader';
+import { Avatar, EmptyState, ErrorState, LoadingSkeleton } from '../../../Shared/States';
+import EmployerShell from '../components/EmployerShell';
 
 export default function Interviews() {
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+
+  const [refresh, setRefresh] = useState(0);
+
   useEffect(() => {
-    async function getInterviews() {
-      try {
-        const data = await api.getApplications();
-        const interviews = data.filter(application => application.status === 'Interviewing');
-        setApplications(interviews);
-      } catch (error) {
-        setError(error.message);
-      }
-      setLoading(false);
-    }
-    getInterviews();
-  }, []);
+    let active = true;
+    api.getApplications().then(
+      (data) => {
+        if (!active) return;
+        setApplications(data.filter((a) => a.status === 'Interviewing'));
+        setLoading(false);
+      },
+      () => {
+        if (!active) return;
+        setError('Unable to load interviews right now.');
+        setLoading(false);
+      },
+    );
+    return () => {
+      active = false;
+    };
+  }, [refresh]);
+
+  const retry = () => {
+    setLoading(true);
+    setError('');
+    setRefresh((r) => r + 1);
+  };
+
   return (
-    <div className="interviews">
-      <nav>
-        <div className="nav-content">
-          <div className="nav-header">
-            <div className="nav-brand">
-              <Link to="/employer">Employer Portal</Link>
-            </div>
-            <div className="nav-links">
-              <Link to="/employer" className="nav-link">Dashboard</Link>
-              <Link to="/employer/jobs" className="nav-link">Jobs</Link>
-              <Link to="/employer/applicants" className="nav-link">Applicants</Link>
-              <Link to="/employer/interviews" className="nav-link active">Interviews</Link>
-            </div>
-          </div>
-        </div>
-      </nav>
-
-      <div className="content">
-        <div className="header">
-          <h2>Interviews</h2>
-        </div>
-
-        <div className="table-container" style={{ padding: '2rem', textAlign: 'center' }}>
-          <div style={{ color: '#8A8D9B', marginBottom: '1rem' }}>
-            {loading && <p>Loading...</p>}
-            {error && <p role="alert">{error}</p>}
-            {applications.map(application => <p key={`${application.jobId}-${application.applicantId}`} style={{ marginBottom: '1rem' }}>
-              <Link to={`/employer/applications/${application.jobId}/${application.applicantId}`}>{application.applicantName} · {application.jobTitle}</Link>
-            </p>)}
-            {!loading && !error && applications.length === 0 && <p>No applications are marked Interviewing.</p>}
-            <p>Interview scheduling feature is not yet available.</p>
-            <p>Please use the Applicants page to manage application status and hiring decisions.</p>
-          </div>
-          <Link to="/employer/applicants" className="action-link" style={{ display: 'inline-block', marginTop: '1rem' }}>
-            Go to Applicants →
+    <EmployerShell activeTab="interviews">
+      <PageHeader
+        eyebrow="Pipeline"
+        title="Interviews"
+        description="Every candidate currently at interview stage, across all postings."
+        actions={
+          <Link to="/employer/applicants" className="td-btn-ghost">
+            Go to applicants
+            <ArrowRight size={14} />
           </Link>
+        }
+      />
+
+      {loading ? (
+        <LoadingSkeleton rows={3} />
+      ) : error ? (
+        <ErrorState message={error} onRetry={retry} />
+      ) : applications.length === 0 ? (
+        <EmptyState
+          icon={CalendarClock}
+          title="No upcoming interviews"
+          hint="Candidates you mark as Interviewing will appear here."
+          actionTo="/employer/applicants"
+          actionLabel="Go to applicants"
+        />
+      ) : (
+        <div className="td-stagger grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          {applications.map((application) => (
+            <Link
+              key={`${application.jobId}-${application.applicantId}`}
+              to={`/employer/applications/${application.jobId}/${application.applicantId}`}
+              className="td-card group flex items-center gap-4 p-5 transition hover:-translate-y-0.5 hover:border-[#ff6b2c]/40"
+            >
+              <Avatar name={application.applicantName} className="h-12 w-12 text-sm" />
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-[15px] font-bold text-white transition group-hover:text-[#ff6b2c]">
+                  {application.applicantName}
+                </p>
+                <p className="truncate text-[13px] text-gray-500">{application.jobTitle}</p>
+                <p className="mt-1 flex items-center gap-1.5 text-xs text-[#ff6b2c]">
+                  <CalendarClock size={12} />
+                  Interviewing
+                </p>
+              </div>
+              <ArrowRight size={16} className="shrink-0 text-gray-600 transition group-hover:translate-x-0.5 group-hover:text-[#ff6b2c]" />
+            </Link>
+          ))}
         </div>
-      </div>
-    </div>
+      )}
+
+      {!loading && !error && (
+        <p className="mt-6 flex items-center gap-2 text-xs text-gray-600">
+          <Users size={13} />
+          Interview dates are managed through each application — open a candidate to schedule.
+        </p>
+      )}
+    </EmployerShell>
   );
 }

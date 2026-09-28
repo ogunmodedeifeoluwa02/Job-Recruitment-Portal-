@@ -1,23 +1,26 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router';
+import { ArrowLeft, ArrowRight, Save } from 'lucide-react';
 import api from '../../../Core/Api';
-import './CreateJob.css';
+import PageHeader from '../../../Shared/PageHeader';
+import EmployerShell from '../components/EmployerShell';
+import JobForm from '../components/JobForm';
+
+const EMPTY = {
+  title: '',
+  location: '',
+  employmentType: 'FullTime',
+  experienceLevel: 'Entry',
+  salary: '',
+  categoryId: '',
+  deadline: '',
+  description: '',
+  requirements: '',
+};
 
 export default function CreateJob() {
   const navigate = useNavigate();
-
-  const [formData, setFormData] = useState({
-    title: '',
-    location: '',
-    employmentType: 'FullTime',
-    experienceLevel: 'Entry',
-    salary: '',
-    categoryId: '',
-    deadline: '',
-    description: '',
-    requirements: '',
-  });
-
+  const [formData, setFormData] = useState(EMPTY);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -27,35 +30,22 @@ export default function CreateJob() {
       try {
         const data = await api.getCategories();
         setCategories(data);
-      } catch (error) {
-        setError(error.message);
+      } catch (err) {
+        setError(err.message);
       }
     }
     loadCategories();
   }, []);
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const validateForm = () => {
-    if (
-      !formData.title ||
-      !formData.location ||
-      !formData.categoryId ||
-      !formData.deadline ||
-      !formData.description ||
-      !formData.requirements
-    ) {
-      setError(
-        'Please fill in all required fields (*), including Category and Application Deadline.'
-      );
+    if (!formData.title || !formData.location || !formData.categoryId || !formData.deadline || !formData.description || !formData.requirements) {
+      setError('Please fill in all required fields (*), including Category and Application Deadline.');
       return false;
     }
-
     if (formData.salary !== '' && Number(formData.salary) < 0) {
       setError('Salary cannot be negative.');
       return false;
@@ -66,14 +56,12 @@ export default function CreateJob() {
   const createJob = async (status) => {
     setLoading(true);
     setError(null);
-
     if (!validateForm()) {
       setLoading(false);
       return;
     }
-
     try {
-      const payload = {
+      await api.createJob({
         title: formData.title,
         location: formData.location,
         employmentType: formData.employmentType,
@@ -83,260 +71,51 @@ export default function CreateJob() {
         deadline: new Date(formData.deadline).toISOString(),
         description: formData.description,
         requirements: formData.requirements,
-        status: status,
-      };
-
-
-      console.log('Create Job Payload:', payload);
-      await api.createJob(payload);
-      console.log('Job created successfully');
-
+        status,
+      });
       navigate('/employer/jobs');
     } catch (err) {
-      console.error('Failed to create job:', err);
-
       setError(err.message);
     }
     setLoading(false);
   };
 
-  const handleSaveDraft = () => {
-    createJob('Draft');
-  };
-
-  const handlePublish = () => {
-    createJob('Published');
-  };
-
   return (
-    <div className="create-job">
-      <nav>
-        <div className="nav-content">
-          <div className="nav-header">
-            <div className="nav-brand">
-              <Link to="/employer">Employer Portal</Link>
-            </div>
+    <EmployerShell activeTab="jobs">
+      <Link
+        to="/employer/jobs"
+        className="flex w-fit items-center gap-2 rounded-full border border-white/10 px-4 py-2 text-[13px] font-semibold text-gray-400 transition hover:border-[#ff6b2c]/50 hover:text-[#ff6b2c]"
+      >
+        <ArrowLeft size={14} />
+        Back to postings
+      </Link>
 
-            <div className="nav-links">
-              <Link to="/employer" className="nav-link">
-                Dashboard
-              </Link>
+      <div className="mt-6">
+        <PageHeader
+          eyebrow="New posting"
+          title="Create job posting"
+          description="Write it well — this is exactly what candidates will read."
+        />
+      </div>
 
-              <Link to="/employer/jobs" className="nav-link active">
-                Jobs
-              </Link>
-
-              <Link to="/employer/applicants" className="nav-link">
-                Applicants
-              </Link>
-
-              <Link to="/employer/interviews" className="nav-link">
-                Interviews
-              </Link>
-            </div>
-          </div>
-        </div>
-      </nav>
-
-      <div className="content">
-        <div>
-          <Link to="/employer/jobs" className="back-link">
-            ← Back to Jobs
-          </Link>
-        </div>
-
-        <div className="form-card">
-          <h2>Create Job Posting</h2>
-
-          {error && (
-            <div
-              className="error-message"
-              style={{
-                color: '#dc2626',
-                marginBottom: '1rem',
-                padding: '0.75rem',
-                backgroundColor: '#fee2e2',
-                borderRadius: '0.375rem',
-              }}
-            >
-              {error}
-            </div>
-          )}
-
-          <div className="form-group">
-            <label htmlFor="title">Job Title *</label>
-
-            <input
-              type="text"
-              id="title"
-              name="title"
-              value={formData.title}
-              onChange={handleChange}
-              placeholder="e.g., Senior Frontend Developer"
-              required
-            />
-          </div>
-
-          <div className="form-row">
-            <div className="form-group">
-              <label htmlFor="location">Location *</label>
-
-              <input
-                type="text"
-                id="location"
-                name="location"
-                value={formData.location}
-                onChange={handleChange}
-                placeholder="e.g., Remote, New York"
-                required
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="employmentType">
-                Employment Type *
-              </label>
-
-              <select
-                id="employmentType"
-                name="employmentType"
-                value={formData.employmentType}
-                onChange={handleChange}
-                required
-              >
-                <option value="FullTime">Full-time</option>
-                <option value="PartTime">Part-time</option>
-                <option value="Contract">Contract</option>
-                <option value="Internship">Internship</option>
-              </select>
-            </div>
-          </div>
-
-          <div className="form-row">
-            <div className="form-group">
-              <label htmlFor="experienceLevel">
-                Experience Level *
-              </label>
-
-              <select
-                id="experienceLevel"
-                name="experienceLevel"
-                value={formData.experienceLevel}
-                onChange={handleChange}
-                required
-              >
-                <option value="Entry">Entry Level</option>
-                <option value="Mid">Mid Level</option>
-                <option value="Senior">Senior Level</option>
-              </select>
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="categoryId">Category *</label>
-
-              <select
-                id="categoryId"
-                name="categoryId"
-                value={formData.categoryId}
-                onChange={handleChange}
-                required
-              >
-                <option value="">Select a category</option>
-
-                {categories.map((category) => (
-                  <option
-                    key={category.id}
-                    value={category.id}
-                  >
-                    {category.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          <div className="form-row">
-            <div className="form-group">
-              <label htmlFor="salary">Salary</label>
-
-              <input
-                type="number"
-                id="salary"
-                name="salary"
-                value={formData.salary}
-                onChange={handleChange}
-                placeholder="e.g., 80000"
-                step="0.01"
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="deadline">
-                Application Deadline *
-              </label>
-
-              <input
-                type="date"
-                id="deadline"
-                name="deadline"
-                value={formData.deadline}
-                onChange={handleChange}
-                required
-              />
-            </div>
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="description">
-              Job Description *
-            </label>
-
-            <textarea
-              id="description"
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              placeholder="Describe the role and responsibilities..."
-              rows={5}
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="requirements">
-              Requirements *
-            </label>
-
-            <textarea
-              id="requirements"
-              name="requirements"
-              value={formData.requirements}
-              onChange={handleChange}
-              placeholder="List the required skills and qualifications..."
-              rows={4}
-              required
-            />
-          </div>
-
-          <div className="button-group">
-            <button
-              onClick={handleSaveDraft}
-              className="button-secondary"
-              disabled={loading}
-            >
-              {loading ? 'Saving...' : 'Save Draft'}
-            </button>
-
-            <button
-              onClick={handlePublish}
-              className="button-primary"
-              disabled={loading}
-            >
-              {loading ? 'Publishing...' : 'Publish'}
-            </button>
-          </div>
+      <div className="td-card td-animate-in max-w-[880px] p-6 sm:p-8">
+        {error && (
+          <p role="alert" className="mb-5 rounded-xl border border-red-500/20 bg-red-500/5 p-3 text-[13px] text-red-400">
+            {error}
+          </p>
+        )}
+        <JobForm formData={formData} categories={categories} disabled={loading} onChange={handleChange} />
+        <div className="mt-7 flex flex-col gap-2 border-t border-white/10 pt-6 sm:flex-row">
+          <button type="button" onClick={() => createJob('Draft')} className="td-btn-ghost" disabled={loading}>
+            <Save size={14} />
+            {loading ? 'Saving…' : 'Save draft'}
+          </button>
+          <button type="button" onClick={() => createJob('Published')} className="td-btn-primary" disabled={loading}>
+            {loading ? 'Publishing…' : 'Publish posting'}
+            {!loading && <ArrowRight size={14} />}
+          </button>
         </div>
       </div>
-    </div>
+    </EmployerShell>
   );
 }

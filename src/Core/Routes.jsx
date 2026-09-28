@@ -2,6 +2,9 @@ import { createBrowserRouter, Navigate, redirect } from 'react-router';
 import Landingpage from '../Pages/Landing/LandingPages';
 import Login from '../Pages/Authentication/Login';
 import JobSeekerDashboard from '../Pages/JobSeeker/JobSeekerDashboard';
+import AvailableJobs from '../Pages/JobSeeker/AvailableJobs';
+import SeekerJobDetails from '../Pages/JobSeeker/JobDetails';
+import ApplyJob from '../Pages/JobSeeker/ApplyJob';
 import EmployerDashboard from '../Pages/Employer/Dashboard/EmployerDashboard';
 import JobListings from '../Pages/Employer/Jobs/JobListings';
 import CreateJob from '../Pages/Employer/Jobs/CreateJob';
@@ -16,10 +19,14 @@ import Interviews from '../Pages/Employer/Interviews/Interviews';
 import ScheduleInterview from '../Pages/Employer/Interviews/ScheduleInterview';
 import HiringDecision from '../Pages/Employer/Hiring/HiringDecision';
 
-const requireLogin = (role) => () => {
+const requireLogin = (role) => ({ request }) => {
   const token = localStorage.getItem('token');
   const user = JSON.parse(localStorage.getItem('user'));
-  if (!token || !user) return redirect('/login');
+  if (!token || !user) {
+    const url = new URL(request.url);
+    const returnTo = url.pathname + url.search;
+    return redirect(`/login?returnTo=${encodeURIComponent(returnTo)}`);
+  }
   const employer = user.account_type === 'Employer';
   if (role === 'Employer' && !employer) return redirect('/jobseekerdashboard');
   if (role === 'JobSeeker' && employer) return redirect('/employer');
@@ -31,7 +38,13 @@ export const router = createBrowserRouter([{
   errorElement: <div className="min-h-screen bg-[#151616] p-8 text-white"><h2 className="mb-4 text-xl">This page could not load.</h2><a href="/login" className="text-[#ff6b2c]">Go back to login</a></div>,
   children: [
   {
+    // Public: renders for everyone. Logged-out visitors see the search UI
+    // with a login prompt (the API needs a token for live results).
     path: '/',
+    element: <AvailableJobs />,
+  },
+  {
+    path: '/home',
     element: <Landingpage />,
   },
   {
@@ -50,6 +63,21 @@ export const router = createBrowserRouter([{
   {
     path: '/MyApplication',
     element: <Navigate to="/jobseekerdashboard?tab=my-applications" replace />,
+  },
+  {
+    // Alias of / (kept so existing links keep working). Same public behavior.
+    path: '/jobs',
+    element: <AvailableJobs />,
+  },
+  {
+    // Public: logged-out visitors get a login CTA; Apply Now returns here.
+    path: '/jobs/:id',
+    element: <SeekerJobDetails />,
+  },
+  {
+    // Full-page apply flow (never a modal). Same public behavior.
+    path: '/jobs/:id/apply',
+    element: <ApplyJob />,
   },
   {
     path: '/employer',
@@ -135,7 +163,7 @@ export const router = createBrowserRouter([{
   },
   {
     path: '*',
-    element: <Navigate to="/" replace />,
+    element: <Navigate to="/home" replace />,
   },
   ],
 }]);

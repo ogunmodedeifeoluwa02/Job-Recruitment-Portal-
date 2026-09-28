@@ -28,7 +28,12 @@ class Api {
       if (response.status === 401 && !endpoint.startsWith('/api/auth/')) {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
-        window.location.assign('/login');
+        const returnTo = window.location.pathname + window.location.search;
+        if (window.location.pathname !== '/login') {
+          window.location.assign(`/login?returnTo=${encodeURIComponent(returnTo)}`);
+        } else {
+          window.location.assign('/login');
+        }
       }
 
       if (!response.ok) {

@@ -1,7 +1,10 @@
 import { Link, useParams, useNavigate } from 'react-router';
 import { useState, useEffect } from 'react';
+import { ArrowLeft, CheckCircle2, FileText, UserRound, XCircle } from 'lucide-react';
 import api from '../../../Core/Api';
-import './ApplicationDetails.css';
+import StatusBadge from '../../../Shared/StatusBadge';
+import { Avatar, ErrorState, LoadingSkeleton } from '../../../Shared/States';
+import EmployerShell from '../components/EmployerShell';
 
 export default function ApplicationDetails() {
   const navigate = useNavigate();
@@ -17,62 +20,20 @@ export default function ApplicationDetails() {
       setLoading(true);
       setError(null);
       try {
-        // Load all applications and find the specific one by ID
         const applicationsData = await api.getApplications();
-        const foundApplication = applicationsData.find(app => app.jobId === jobId && app.applicantId === applicantId);
-        
-        if (foundApplication) {
-          setApplication(foundApplication);
+        const found = applicationsData.find(app => app.jobId === jobId && app.applicantId === applicantId);
+        if (found) {
+          setApplication(found);
         } else {
           setError('Application not found');
         }
-      } catch (err) {
-        console.error('Failed to load application:', err);
-        setError('Failed to load application');
+      } catch {
+        setError('Unable to load this application right now.');
       }
       setLoading(false);
     };
-
     loadApplication();
   }, [jobId, applicantId]);
-
-  if (loading) {
-    return (
-      <div className="application-details">
-        <nav>
-          <div className="nav-content">
-            <div className="nav-header">
-              <div className="nav-brand">
-                <Link to="/employer">Employer Portal</Link>
-              </div>
-            </div>
-          </div>
-        </nav>
-        <div className="content">
-          <p>Loading...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (error || !application) {
-    return (
-      <div className="application-details">
-        <nav>
-          <div className="nav-content">
-            <div className="nav-header">
-              <div className="nav-brand">
-                <Link to="/employer">Employer Portal</Link>
-              </div>
-            </div>
-          </div>
-        </nav>
-        <div className="content">
-          <p>{error || 'Application not found'}</p>
-        </div>
-      </div>
-    );
-  }
 
   const handleAction = async (status) => {
     setSaving(true);
@@ -87,92 +48,106 @@ export default function ApplicationDetails() {
   };
 
   return (
-    <div className="application-details">
-      <nav>
-        <div className="nav-content">
-          <div className="nav-header">
-            <div className="nav-brand">
-              <Link to="/employer">Employer Portal</Link>
-            </div>
-            <div className="nav-links">
-              <Link to="/employer" className="nav-link">Dashboard</Link>
-              <Link to="/employer/jobs" className="nav-link">Jobs</Link>
-              <Link to="/employer/applicants" className="nav-link active">Applicants</Link>
-              <Link to="/employer/interviews" className="nav-link">Interviews</Link>
-            </div>
-          </div>
-        </div>
-      </nav>
+    <EmployerShell activeTab="applications">
+      <Link
+        to="/employer/applications"
+        className="flex w-fit items-center gap-2 rounded-full border border-white/10 px-4 py-2 text-[13px] font-semibold text-gray-400 transition hover:border-[#ff6b2c]/50 hover:text-[#ff6b2c]"
+      >
+        <ArrowLeft size={14} />
+        Back to applications
+      </Link>
 
-      <div className="content">
-        <div>
-          <Link to="/employer/applications" className="back-link">
-            ← Back to Applications
-          </Link>
-        </div>
-
-        <div className="card">
-          {actionError && <p role="alert" style={{ color: '#dc2626' }}>{actionError}</p>}
-          <div className="card-header">
-            <div className="avatar-large">
-              {application.applicantName.split(' ').map(n => n[0]).join('')}
+      {loading ? (
+        <div className="mt-6"><LoadingSkeleton rows={2} /></div>
+      ) : error || !application ? (
+        <div className="mt-6"><ErrorState message={error} /></div>
+      ) : (
+        <div className="td-animate-in mt-6 grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_340px]">
+          <div className="td-card p-6 sm:p-8">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+              <Avatar name={application.applicantName} className="h-16 w-16 text-xl" />
+              <div className="min-w-0 flex-1">
+                <h1 className="truncate font-fraunces text-2xl font-bold text-white sm:text-3xl">
+                  {application.applicantName}
+                </h1>
+                <p className="mt-1 text-sm text-gray-400">
+                  Applied for <strong className="text-white">{application.jobTitle}</strong>
+                  {application.appliedAtUtc && <> · {new Date(application.appliedAtUtc).toLocaleDateString()}</>}
+                </p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <StatusBadge status={application.status} />
+                  <span className="inline-flex items-center rounded-full border border-white/10 px-3 py-1 text-xs text-gray-400">
+                    {application.applicantEmail}
+                  </span>
+                </div>
+              </div>
             </div>
-            <div className="applicant-info">
-              <h2>{application.applicantName}</h2>
-              <p className="applicant-subtitle">{application.jobTitle}</p>
-              <p className="applicant-meta">Applied: {new Date(application.appliedAtUtc).toLocaleDateString()}</p>
-            </div>
-          </div>
 
-          <div className="metrics-grid">
-            <div className="metric-card">
-              <p className="metric-label">Email</p>
-              <p className="metric-value">{application.applicantEmail}</p>
-            </div>
-            <div className="metric-card">
-              <p className="metric-label">Phone</p>
-              <p className="metric-value">{'Not available'}</p>
-            </div>
-          </div>
+            {actionError && (
+              <p role="alert" className="mt-5 rounded-xl border border-red-500/20 bg-red-500/5 p-3 text-[13px] text-red-400">
+                {actionError}
+              </p>
+            )}
 
-          <p>Profile and CV coming soon — API work in progress.</p>
-          <Link to={`/employer/applicants/${application.applicantId}?jobId=${application.jobId}`}>View Profile</Link>
-          <Link to={`/employer/applicants/${application.applicantId}/resume?jobId=${application.jobId}`}>View CV</Link>
-          <div className="section">
-            <h3>Professional Summary</h3>
-            <p>{application.summary}</p>
-          </div>
-
-          <div className="section">
-            <h3>Skills</h3>
-            <div className="skills-container">
-              {application.skills && application.skills.map((skill, index) => (
-                <span key={index} className="skill-tag">
-                  {skill}
-                </span>
-              ))}
+            <div className="mt-6 border-t border-white/10 pt-6">
+              <h2 className="text-xs font-bold uppercase tracking-[0.16em] text-[#ff6b2c]">Summary</h2>
+              <p className="mt-3 whitespace-pre-wrap text-sm leading-6 text-[#d6d3cb]">
+                {application.summary || 'No summary provided.'}
+              </p>
             </div>
-          </div>
 
-          <div className="actions-section">
-            <h4>Application Actions</h4>
-            <div className="actions-grid">
-              <button disabled={saving} onClick={() => handleAction('Reviewed')} className="action-button green">
-                Mark Reviewed
-              </button>
-              <button disabled={saving} onClick={() => handleAction('Interviewing')} className="action-button blue">
-                Mark Interviewing
-              </button>
-              <Link to={`/employer/hiring/${application.jobId}/${application.applicantId}`} className="action-button blue">
-                Make Hiring Decision
+            <div className="mt-6">
+              <h2 className="text-xs font-bold uppercase tracking-[0.16em] text-[#ff6b2c]">Skills</h2>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {application.skills?.length ? application.skills.map((skill, i) => (
+                  <span key={i} className="rounded-full border border-[#ff6b2c]/30 bg-[#ff6b2c]/5 px-3 py-1 text-xs font-semibold text-[#ff6b2c]">
+                    {skill}
+                  </span>
+                )) : <p className="text-sm text-gray-500">No skills listed.</p>}
+              </div>
+            </div>
+
+            <div className="mt-6 flex flex-wrap gap-2 border-t border-white/10 pt-6">
+              <Link to={`/employer/applicants/${application.applicantId}?jobId=${application.jobId}`} className="td-btn-ghost !px-4 !py-2">
+                <UserRound size={14} />
+                Full profile
+              </Link>
+              <Link to={`/employer/applicants/${application.applicantId}/resume?jobId=${application.jobId}`} className="td-btn-ghost !px-4 !py-2">
+                <FileText size={14} />
+                View CV
               </Link>
             </div>
-            <button disabled={saving} onClick={() => handleAction('Rejected')} className="action-button red" style={{ marginTop: '1rem', width: '100%' }}>
-              Reject Application
-            </button>
           </div>
+
+          <aside className="td-card border-[#ff6b2c]/25 bg-gradient-to-b from-[#ff6b2c]/10 to-transparent p-6 lg:sticky lg:top-36">
+            <h2 className="text-sm font-bold text-white">Move this candidate</h2>
+            <p className="mt-1 text-xs leading-5 text-gray-400">
+              Every action updates the candidate's status instantly.
+            </p>
+            <div className="mt-4 space-y-2">
+              <button type="button" disabled={saving} onClick={() => handleAction('Reviewed')} className="td-btn-ghost w-full">
+                <CheckCircle2 size={14} />
+                Mark reviewed
+              </button>
+              <button type="button" disabled={saving} onClick={() => handleAction('Interviewing')} className="td-btn-ghost w-full">
+                Mark interviewing
+              </button>
+              <Link to={`/employer/hiring/${application.jobId}/${application.applicantId}`} className="td-btn-primary w-full">
+                Hiring decision →
+              </Link>
+              <button
+                type="button"
+                disabled={saving}
+                onClick={() => handleAction('Rejected')}
+                className="flex w-full items-center justify-center gap-1.5 rounded-full border border-red-500/30 px-6 py-2.5 text-[13px] font-semibold text-red-400 transition hover:bg-red-500/10 disabled:opacity-40"
+              >
+                <XCircle size={14} />
+                Reject application
+              </button>
+            </div>
+          </aside>
         </div>
-      </div>
-    </div>
+      )}
+    </EmployerShell>
   );
 }

@@ -19,7 +19,9 @@ html {
 body {
   margin: 0;
   min-width: 320px;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Plus Jakarta Sans", Arial, Helvetica, sans-serif;
+  background-color: #151616;
+  color: #f5f1ea;
 }
 
 button,
@@ -29,4 +31,460 @@ input {
 
 a {
   text-decoration: none;
+}
+
+/* Light mode: keep the same orange branding, swap dark surfaces for clean light ones.
+   Dark remains the default; these overrides only apply when <html class="light">. */
+html.light body {
+  background-color: #f7f5f0;
+  color: #1a1a1a;
+}
+
+html.light [class*="bg-[#151616]"] {
+  background-color: #f7f5f0 !important;
+}
+
+html.light [class*="bg-[#1b1d1e]"] {
+  background-color: #ffffff !important;
+  border-color: #e8e2d8 !important;
+}
+
+html.light [class*="bg-[#202223]"] {
+  background-color: #ffffff !important;
+  border-color: #e8e2d8 !important;
+}
+
+/* Active-postings banner + filter boxes use bg-[#1e2022].
+   In light mode give them a warm light tint so the orange
+   primary colour still shows, with dark readable text. */
+html.light [class*="bg-[#1e2022]"] {
+  background-color: #fff4eb !important;
+  border-color: #f0d5bd !important;
+}
+
+/* Keep filter inputs white in light mode; only the banner div keeps the tint. */
+html.light input[class*="bg-[#1e2022]"],
+html.light select[class*="bg-[#1e2022]"] {
+  background-color: #ffffff !important;
+  border-color: #ddd6c8 !important;
+}
+
+html.light .text-white,
+html.light [class*="text-[#f5f1ea]"] {
+  color: #1a1a1a !important;
+}
+
+html.light .text-gray-300,
+html.light .text-gray-400,
+html.light [class*="text-[#aaa8a3]"],
+html.light [class*="text-[#b8b6b0]"] {
+  color: #5c5c58 !important;
+}
+
+html.light [class*="border-white/"] {
+  border-color: #e8e2d8 !important;
+}
+
+html.light input,
+html.light select {
+  background-color: #ffffff !important;
+  color: #1a1a1a !important;
+  border-color: #ddd6c8 !important;
+}
+
+html.light input::placeholder {
+  color: #9a968e !important;
+}
+
+/* ============================================================
+   Theme-aware contrast system.
+   Dark is the default theme; these rules only adjust what fails
+   in the opposite theme. Brand orange (#ff6b2c) is never replaced.
+   ============================================================ */
+
+/* ---- Dark-theme fixes (base): grays that are too dim on #151616 ---- */
+.text-gray-500 {
+  color: #8f8f8a !important;
+}
+
+.text-gray-600 {
+  color: #a8a29e !important;
+}
+
+/* ---- Light-theme text: everything light must go dark ---- */
+html.light .text-gray-500 {
+  color: #5b5850 !important;
+}
+
+html.light .text-gray-600 {
+  color: #52525b !important;
+}
+
+html.light [class*="text-[#9b9b96]"],
+html.light [class*="text-[#a8a8a3]"],
+html.light .td-label,
+html.light .td-eyebrow {
+  color: #5f5b53 !important;
+}
+
+html.light [class*="text-[#b8b6b0]"],
+html.light [class*="text-[#d6d3cb]"],
+html.light [class*="text-[#d1d5db]"] {
+  color: #33312c !important;
+}
+
+html.light [class*="text-[#c6cbd0]"] {
+  color: #52525b !important;
+}
+
+html.light [class*="text-[#9ebcff]"] {
+  color: #1d4ed8 !important;
+}
+
+html.light [class*="text-[#a3b5d3]"] {
+  color: #3f5da8 !important;
+}
+
+html.light [class*="text-[#f47b45]"] {
+  color: #c2410c !important;
+}
+
+/* Semantic colors readable on white */
+html.light .text-green-400 {
+  color: #15803d !important;
+}
+
+html.light .text-yellow-400 {
+  color: #a16207 !important;
+}
+
+html.light .text-red-400 {
+  color: #dc2626 !important;
+}
+
+html.light .text-sky-400 {
+  color: #0369a1 !important;
+}
+
+/* Status badge "Open" keeps an orange identity in both themes */
+.td-status-open {
+  color: #ff6b2c;
+}
+
+html.light .td-status-open {
+  color: #c2410c !important;
+}
+
+/* Small orange-on-tint text (e.g. skill tags): same hue, darker for contrast */
+html.light [class*="bg-[#ff6b2c]/5"][class*="text-[#ff6b2c]"] {
+  color: #c2410c !important;
+}
+
+/* Hover states that turn white must turn dark in light mode */
+html.light [class*="hover:text-white"]:hover {
+  color: #1a1a1a !important;
+}
+
+html.light [class*="hover:text-[#ff7d45]"]:hover {
+  color: #c2410c !important;
+}
+
+/* Subtle white surfaces/dividers need a whisper of gray in light mode */
+html.light [class*="bg-white/"] {
+  background-color: rgba(21, 22, 22, 0.04) !important;
+}
+
+html.light [class*="divide-white/"] > * {
+  border-color: #e8e2d8 !important;
+}
+
+/* Tab rail that stays dark gray */
+html.light [class*="bg-[#252829]"] {
+  background-color: #e9e2d6 !important;
+  border-color: #e8e2d8 !important;
+}
+
+/* Placeholders: visible in both themes */
+html.light input::placeholder,
+html.light textarea::placeholder {
+  color: #6f6b62 !important;
+}
+
+html.light .td-shimmer {
+  background: linear-gradient(
+    100deg,
+    rgba(21, 22, 22, 0.05) 40%,
+    rgba(21, 22, 22, 0.12) 50%,
+    rgba(21, 22, 22, 0.05) 60%
+  );
+  background-size: 200% 100%;
+}
+
+/* ============================================================
+   TalentDesk shared UI system (brand: #151616 / #ff6b2c).
+   Use these for buttons, inputs, cards and labels so pages stay
+   visually related instead of each inventing their own CSS.
+   ============================================================ */
+.td-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 9999px;
+  background: #ff6b2c;
+  color: #151616;
+  font-weight: 700;
+  font-size: 13px;
+  padding: 0.65rem 1.5rem;
+  transition: background 0.2s;
+}
+
+.td-btn-primary:hover {
+  background: #ff7d45;
+}
+
+.td-btn-primary:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.td-btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #d1d5db;
+  font-weight: 600;
+  font-size: 13px;
+  padding: 0.65rem 1.5rem;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.td-btn-ghost:hover {
+  border-color: rgba(255, 107, 44, 0.5);
+  color: #ff6b2c;
+}
+
+.td-input {
+  width: 100%;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #1e2022;
+  padding: 0.75rem 1rem;
+  font-size: 13px;
+  color: #fff;
+  outline: none;
+}
+
+.td-input:focus {
+  border-color: rgba(255, 107, 44, 0.6);
+}
+
+.td-input::placeholder {
+  color: #777772;
+}
+
+.td-card {
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #1b1d1e;
+}
+
+.td-eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #9b9b96;
+}
+
+html.light .td-card {
+  background: #ffffff !important;
+  border-color: #e8e2d8 !important;
+}
+
+html.light .td-input {
+  background: #ffffff !important;
+  color: #1a1a1a !important;
+  border-color: #ddd6c8 !important;
+}
+
+html.light .td-btn-ghost {
+  color: #5c5c58 !important;
+  border-color: #ddd6c8 !important;
+}
+
+/* ============================================================
+   Motion + surfaces (tasteful, fast, professional)
+   ============================================================ */
+@keyframes td-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.td-animate-in {
+  animation: td-fade-up 0.45s ease both;
+}
+
+.td-stagger > * {
+  animation: td-fade-up 0.45s ease both;
+}
+
+.td-stagger > *:nth-child(2) { animation-delay: 0.05s; }
+.td-stagger > *:nth-child(3) { animation-delay: 0.1s; }
+.td-stagger > *:nth-child(4) { animation-delay: 0.15s; }
+.td-stagger > *:nth-child(5) { animation-delay: 0.2s; }
+.td-stagger > *:nth-child(6) { animation-delay: 0.25s; }
+.td-stagger > *:nth-child(n + 7) { animation-delay: 0.3s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .td-animate-in,
+  .td-stagger > * {
+    animation: none;
+  }
+}
+
+@keyframes td-shimmer-slide {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+.td-shimmer {
+  background: linear-gradient(
+    100deg,
+    rgba(255, 255, 255, 0.05) 40%,
+    rgba(255, 255, 255, 0.12) 50%,
+    rgba(255, 255, 255, 0.05) 60%
+  );
+  background-size: 200% 100%;
+  animation: td-shimmer-slide 1.4s linear infinite;
+}
+
+/* Soft orange glow used behind hero/discovery headers */
+.td-glow {
+  background:
+    radial-gradient(600px 220px at 15% 0%, rgba(255, 107, 44, 0.14), transparent 70%),
+    radial-gradient(500px 200px at 90% 20%, rgba(255, 107, 44, 0.08), transparent 70%);
+}
+
+/* Data tables (employer lists) */
+.td-table-wrap {
+  overflow-x: auto;
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #1b1d1e;
+}
+
+.td-table {
+  width: 100%;
+  min-width: 720px;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.td-table thead th {
+  text-align: left;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #9b9b96;
+  padding: 0.9rem 1.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  white-space: nowrap;
+}
+
+.td-table tbody td {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  color: #d1d5db;
+  vertical-align: middle;
+}
+
+.td-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.td-table tbody tr {
+  transition: background 0.15s;
+}
+
+.td-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+html.light .td-table-wrap {
+  background: #ffffff !important;
+  border-color: #e8e2d8 !important;
+}
+
+html.light .td-table tbody td {
+  color: #3a3a36 !important;
+}
+
+/* Form labels */
+.td-label {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #9b9b96;
+}
+
+textarea.td-input {
+  resize: vertical;
+  min-height: 110px;
+  line-height: 1.6;
+}
+
+/* Filter pills */
+.td-pill {
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 0.5rem 1rem;
+  font-size: 12px;
+  font-weight: 600;
+  color: #b8b6b0;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+  white-space: nowrap;
+}
+
+.td-pill:hover {
+  border-color: rgba(255, 107, 44, 0.5);
+  color: #ff6b2c;
+}
+
+.td-pill-active {
+  background: #ff6b2c;
+  border-color: #ff6b2c;
+  color: #151616;
+}
+
+.td-pill-active:hover {
+  color: #151616;
+}
+
+html.light .td-pill {
+  border-color: #ddd6c8 !important;
+  color: #5c5c58 !important;
+}
+
+html.light .td-pill-active {
+  background: #ff6b2c !important;
+  border-color: #ff6b2c !important;
+  color: #151616 !important;
 }

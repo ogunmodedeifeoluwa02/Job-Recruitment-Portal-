@@ -1,11 +1,22 @@
 import { Link, useParams } from 'react-router';
 import { useState, useEffect } from 'react';
+import { ArrowLeft, Briefcase, CalendarDays, Clock, MapPin, Pencil, TrendingUp, Users, Wallet } from 'lucide-react';
 import api from '../../../Core/Api';
-import './JobDetails.css';
+import PageHeader from '../../../Shared/PageHeader';
+import StatusBadge from '../../../Shared/StatusBadge';
+import { ErrorState, LoadingSkeleton } from '../../../Shared/States';
+import EmployerShell from '../components/EmployerShell';
+import StatCard from '../components/StatCard';
+
+function formatDate(dateString) {
+  if (!dateString) return '—';
+  return new Date(dateString).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
 
 export default function JobDetails() {
   const { id } = useParams();
   const [job, setJob] = useState(null);
+  const [applicantCount, setApplicantCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -16,148 +27,104 @@ export default function JobDetails() {
       try {
         const data = await api.getJob(id);
         setJob(data);
+        try {
+          const applications = await api.getApplications();
+          setApplicantCount(applications.filter(a => a.jobId === data.id).length);
+        } catch {
+          // Applicant count is a bonus; the page works without it.
+        }
       } catch (err) {
-        console.error('Failed to load job:', err);
         if (err.message?.includes('404') || err.message?.includes('Not Found')) {
           setError('Job not found');
         } else {
-          setError('Failed to load job');
+          setError('Unable to load this posting right now.');
         }
       } finally {
         setLoading(false);
       }
     };
-
     loadJob();
   }, [id]);
 
-  const formatDate = (dateString) => {
-    if (!dateString) return 'N/A';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-  };
-
-  const formatSalary = (salary) => {
-    if (salary == null) return 'Not specified';
-    return Number(salary).toLocaleString();
-  };
-
-  if (loading) {
-    return (
-      <div className="job-details">
-        <nav>
-          <div className="nav-content">
-            <div className="nav-header">
-              <div className="nav-brand">
-                <Link to="/employer">Employer Portal</Link>
-              </div>
-            </div>
-          </div>
-        </nav>
-        <div className="content">
-          <p>Loading...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (error || !job) {
-    return (
-      <div className="job-details">
-        <nav>
-          <div className="nav-content">
-            <div className="nav-header">
-              <div className="nav-brand">
-                <Link to="/employer">Employer Portal</Link>
-              </div>
-            </div>
-          </div>
-        </nav>
-        <div className="content">
-          <p>{error || 'Job not found'}</p>
-        </div>
-      </div>
-    );
-  }
+  const facts = job ? [
+    { icon: Wallet, label: 'Salary', value: job.salary == null ? 'Not specified' : Number(job.salary).toLocaleString() },
+    { icon: TrendingUp, label: 'Experience', value: job.experienceLevel || '—' },
+    { icon: Briefcase, label: 'Type', value: job.employmentType || '—' },
+    { icon: MapPin, label: 'Location', value: job.location || '—' },
+    { icon: Clock, label: 'Deadline', value: formatDate(job.deadline) },
+    { icon: CalendarDays, label: 'Posted', value: formatDate(job.createdAtUtc) },
+  ] : [];
 
   return (
-    <div className="job-details">
-      <nav>
-        <div className="nav-content">
-          <div className="nav-header">
-            <div className="nav-brand">
-              <Link to="/employer">Employer Portal</Link>
-            </div>
-            <div className="nav-links">
-              <Link to="/employer" className="nav-link">Dashboard</Link>
-              <Link to="/employer/jobs" className="nav-link active">Jobs</Link>
-              <Link to="/employer/applicants" className="nav-link">Applicants</Link>
-              <Link to="/employer/interviews" className="nav-link">Interviews</Link>
-            </div>
-          </div>
-        </div>
-      </nav>
+    <EmployerShell activeTab="jobs">
+      <Link
+        to="/employer/jobs"
+        className="flex w-fit items-center gap-2 rounded-full border border-white/10 px-4 py-2 text-[13px] font-semibold text-gray-400 transition hover:border-[#ff6b2c]/50 hover:text-[#ff6b2c]"
+      >
+        <ArrowLeft size={14} />
+        Back to postings
+      </Link>
 
-      <div className="content">
-        <div>
-          <Link to="/employer/jobs" className="back-link">
-            ← Back to Jobs
-          </Link>
-        </div>
-
-        <div className="card">
-          <div className="card-header">
-            <div>
-              <h2>{job.title}</h2>
-              <p className="job-subtitle">{job.location} • {job.employmentType}</p>
-            </div>
-            <div>
-              <Link to={`/employer/jobs/${job.id}/edit`} className="edit-button">
-                Edit
+      {loading ? (
+        <div className="mt-6"><LoadingSkeleton rows={2} /></div>
+      ) : error || !job ? (
+        <div className="mt-6"><ErrorState message={error} /></div>
+      ) : (
+        <div className="td-animate-in mt-6">
+          <PageHeader
+            eyebrow={job.category?.name || 'Posting'}
+            title={job.title}
+            description={`${job.location || '—'} · ${job.employmentType || '—'}`}
+            actions={
+              <Link to={`/employer/jobs/${job.id}/edit`} className="td-btn-primary">
+                <Pencil size={14} />
+                Edit posting
               </Link>
+            }
+          />
+
+          <div className="mb-6 grid gap-4 sm:grid-cols-2">
+            <StatCard icon={Users} label="Applicants" value={applicantCount} hint="For this posting" accent />
+            <div className="td-card flex items-center justify-between p-5">
+              <div>
+                <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#aaa8a3]">Status</p>
+                <div className="mt-2"><StatusBadge status={job.status} /></div>
+              </div>
             </div>
           </div>
 
-          <div className="metrics-grid">
-            <div className="metric-card">
-              <p className="metric-label">Salary</p>
-              <p className="metric-value">{formatSalary(job.salary)}</p>
+          <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
+            <div className="space-y-4">
+              <section className="td-card p-6 sm:p-7">
+                <h2 className="text-xs font-bold uppercase tracking-[0.16em] text-[#ff6b2c]">Description</h2>
+                <p className="mt-3 whitespace-pre-wrap text-[15px] leading-7 text-[#d6d3cb]">{job.description}</p>
+              </section>
+              {job.requirements && (
+                <section className="td-card p-6 sm:p-7">
+                  <h2 className="text-xs font-bold uppercase tracking-[0.16em] text-[#ff6b2c]">Requirements</h2>
+                  <p className="mt-3 whitespace-pre-wrap text-[15px] leading-7 text-[#d6d3cb]">{job.requirements}</p>
+                </section>
+              )}
             </div>
-            <div className="metric-card">
-              <p className="metric-label">Experience Level</p>
-              <p className="metric-value">{job.experienceLevel}</p>
-            </div>
-            <div className="metric-card">
-              <p className="metric-label">Category</p>
-              <p className="metric-value">{job.category?.name || 'N/A'}</p>
-            </div>
-            <div className="metric-card">
-              <p className="metric-label">Status</p>
-              <p className="metric-value capitalize">{job.status}</p>
-            </div>
-          </div>
-
-          <div className="section">
-            <h3>Description</h3>
-            <p>{job.description}</p>
-          </div>
-
-          <div className="section">
-            <h3>Requirements</h3>
-            <p>{job.requirements}</p>
-          </div>
-
-          <div className="section">
-            <h3>Deadline</h3>
-            <p>{formatDate(job.deadline)}</p>
-          </div>
-
-          <div className="section">
-            <h3>Posted Date</h3>
-            <p>{formatDate(job.createdAtUtc)}</p>
+            <aside className="td-card p-6 lg:sticky lg:top-36">
+              <h2 className="text-xs font-bold uppercase tracking-[0.16em] text-gray-400">Facts</h2>
+              <dl className="mt-4 space-y-3.5">
+                {facts.map(({ icon: Icon, label, value }) => (
+                  <div key={label} className="flex items-center gap-3 text-sm">
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/5 text-[#ff6b2c]">
+                      <Icon size={15} />
+                    </span>
+                    <div className="min-w-0">
+                      <dt className="text-[11px] uppercase tracking-wider text-gray-500">{label}</dt>
+                      <dd className="truncate font-semibold text-white">{value}</dd>
+                    </div>
+                  </div>
+                ))}
+              </dl>
+            </aside>
           </div>
         </div>
-      </div>
-    </div>
+      )}
+    </EmployerShell>
   );
 }

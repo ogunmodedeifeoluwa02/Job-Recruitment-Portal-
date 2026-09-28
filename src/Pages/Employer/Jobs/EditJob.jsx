@@ -1,7 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
+import { Archive, ArrowLeft, Save, Send } from 'lucide-react';
 import api from '../../../Core/Api';
-import './EditJob.css';
+import PageHeader from '../../../Shared/PageHeader';
+import { ErrorState, LoadingSkeleton } from '../../../Shared/States';
+import EmployerShell from '../components/EmployerShell';
+import JobForm from '../components/JobForm';
 
 export default function EditJob() {
   const navigate = useNavigate();
@@ -9,7 +13,6 @@ export default function EditJob() {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
   const [formData, setFormData] = useState({
     title: '',
     location: '',
@@ -32,7 +35,6 @@ export default function EditJob() {
           api.getCategories()
         ]);
         setCategories(categoriesData);
-        
         setFormData({
           title: jobData.title || '',
           location: jobData.location || '',
@@ -45,7 +47,6 @@ export default function EditJob() {
           requirements: jobData.requirements || '',
         });
       } catch (err) {
-        console.error('Failed to load data:', err);
         if (err.message?.includes('404') || err.message?.includes('Not Found')) {
           setError('Job not found');
         } else {
@@ -55,296 +56,86 @@ export default function EditJob() {
         setLoading(false);
       }
     };
-
     loadData();
   }, [id]);
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSaveDraft = async () => {
+  const submitWithStatus = async (status, failureMessage) => {
     setLoading(true);
     setError(null);
     try {
-      const jobData = {
+      await api.updateJob(id, {
         ...formData,
-        status: 'Draft',
+        status,
         deadline: formData.deadline ? new Date(formData.deadline).toISOString() : null,
         salary: formData.salary ? parseFloat(formData.salary) : null,
-      };
-      await api.updateJob(id, jobData);
+      });
       navigate('/employer/jobs');
     } catch (err) {
-      console.error('Failed to save draft:', err);
       if (err.message?.includes('404') || err.message?.includes('Not Found')) {
         setError('Job not found');
       } else {
-        setError('Failed to save draft');
+        setError(failureMessage);
       }
       setLoading(false);
     }
   };
 
-  const handlePublish = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const jobData = {
-        ...formData,
-        status: 'Published',
-        deadline: formData.deadline ? new Date(formData.deadline).toISOString() : null,
-        salary: formData.salary ? parseFloat(formData.salary) : null,
-      };
-      await api.updateJob(id, jobData);
-      navigate('/employer/jobs');
-    } catch (err) {
-      console.error('Failed to publish job:', err);
-      if (err.message?.includes('404') || err.message?.includes('Not Found')) {
-        setError('Job not found');
-      } else {
-        setError('Failed to publish job');
-      }
-      setLoading(false);
-    }
-  };
-
-  const handleClose = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const jobData = {
-        ...formData,
-        status: 'Closed',
-        deadline: formData.deadline ? new Date(formData.deadline).toISOString() : null,
-        salary: formData.salary ? parseFloat(formData.salary) : null,
-      };
-      await api.updateJob(id, jobData);
-      navigate('/employer/jobs');
-    } catch (err) {
-      console.error('Failed to close job:', err);
-      if (err.message?.includes('404') || err.message?.includes('Not Found')) {
-        setError('Job not found');
-      } else {
-        setError('Failed to close job');
-      }
-      setLoading(false);
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="edit-job">
-        <nav>
-          <div className="nav-content">
-            <div className="nav-header">
-              <div className="nav-brand">
-                <Link to="/employer">Employer Portal</Link>
-              </div>
-            </div>
-          </div>
-        </nav>
-        <div className="content">
-          <p>Loading...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="edit-job">
-        <nav>
-          <div className="nav-content">
-            <div className="nav-header">
-              <div className="nav-brand">
-                <Link to="/employer">Employer Portal</Link>
-              </div>
-            </div>
-          </div>
-        </nav>
-        <div className="content">
-          <p>{error}</p>
-        </div>
-      </div>
-    );
-  }
+  const handleSaveDraft = () => submitWithStatus('Draft', 'Failed to save draft');
+  const handlePublish = () => submitWithStatus('Published', 'Failed to publish job');
+  const handleClose = () => submitWithStatus('Closed', 'Failed to close job');
 
   return (
-    <div className="edit-job">
-      <nav>
-        <div className="nav-content">
-          <div className="nav-header">
-            <div className="nav-brand">
-              <Link to="/employer">Employer Portal</Link>
-            </div>
-            <div className="nav-links">
-              <Link to="/employer" className="nav-link">Dashboard</Link>
-              <Link to="/employer/jobs" className="nav-link active">Jobs</Link>
-              <Link to="/employer/applicants" className="nav-link">Applicants</Link>
-              <Link to="/employer/interviews" className="nav-link">Interviews</Link>
-            </div>
-          </div>
-        </div>
-      </nav>
+    <EmployerShell activeTab="jobs">
+      <Link
+        to="/employer/jobs"
+        className="flex w-fit items-center gap-2 rounded-full border border-white/10 px-4 py-2 text-[13px] font-semibold text-gray-400 transition hover:border-[#ff6b2c]/50 hover:text-[#ff6b2c]"
+      >
+        <ArrowLeft size={14} />
+        Back to postings
+      </Link>
 
-      <div className="content">
-        <div>
-          <Link to="/employer/jobs" className="back-link">
-            ← Back to Jobs
-          </Link>
-        </div>
-
-        <div className="form-card">
-          <h2>Edit Job Posting</h2>
-          
-          {error && (
-            <div className="error-message" style={{ color: '#dc2626', marginBottom: '1rem', padding: '0.75rem', backgroundColor: '#fee2e2', borderRadius: '0.375rem' }}>
-              {error}
-            </div>
-          )}
-
-          <div className="form-group">
-            <label htmlFor="title">Job Title *</label>
-            <input
-              type="text"
-              id="title"
-              name="title"
-              value={formData.title}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div className="form-row">
-            <div className="form-group">
-              <label htmlFor="location">Location *</label>
-              <input
-                type="text"
-                id="location"
-                name="location"
-                value={formData.location}
-                onChange={handleChange}
-                required
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="employmentType">Employment Type</label>
-              <select
-                id="employmentType"
-                name="employmentType"
-                value={formData.employmentType}
-                onChange={handleChange}
-              >
-                <option value="FullTime">Full-time</option>
-                <option value="PartTime">Part-time</option>
-                <option value="Contract">Contract</option>
-                <option value="Internship">Internship</option>
-              </select>
-            </div>
-          </div>
-
-          <div className="form-row">
-            <div className="form-group">
-              <label htmlFor="experienceLevel">Experience Level</label>
-              <select
-                id="experienceLevel"
-                name="experienceLevel"
-                value={formData.experienceLevel}
-                onChange={handleChange}
-              >
-                <option value="Entry">Entry Level</option>
-                <option value="Mid">Mid Level</option>
-                <option value="Senior">Senior Level</option>
-              </select>
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="categoryId">Category</label>
-              <select
-                id="categoryId"
-                name="categoryId"
-                value={formData.categoryId}
-                onChange={handleChange}
-              >
-                <option value="">Select a category</option>
-                {categories.map((category) => (
-                  <option key={category.id} value={category.id}>
-                    {category.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          <div className="form-row">
-            <div className="form-group">
-              <label htmlFor="salary">Salary</label>
-              <input
-                type="number"
-                id="salary"
-                name="salary"
-                value={formData.salary}
-                onChange={handleChange}
-                step="0.01"
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="deadline">Application Deadline</label>
-              <input
-                type="date"
-                id="deadline"
-                name="deadline"
-                value={formData.deadline}
-                onChange={handleChange}
-              />
-            </div>
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="description">Job Description *</label>
-            <textarea
-              id="description"
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              rows={5}
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="requirements">Requirements *</label>
-            <textarea
-              id="requirements"
-              name="requirements"
-              value={formData.requirements}
-              onChange={handleChange}
-              rows={4}
-              required
-            />
-          </div>
-
-          <div className="button-group">
-            <button onClick={handleClose} className="button-danger" disabled={loading}>
-              Close Job
-            </button>
-            <div>
-              <button onClick={handleSaveDraft} className="button-secondary" disabled={loading}>
-                {loading ? 'Saving...' : 'Save Draft'}
-              </button>
-              <button onClick={handlePublish} className="button-primary" disabled={loading}>
-                {loading ? 'Publishing...' : 'Publish'}
-              </button>
-            </div>
-          </div>
-        </div>
+      <div className="mt-6">
+        <PageHeader
+          eyebrow="Edit posting"
+          title={formData.title || 'Edit job posting'}
+          description="Changes go live in the state you choose below."
+        />
       </div>
-    </div>
+
+      {loading && !formData.title ? (
+        <LoadingSkeleton rows={2} />
+      ) : error && !formData.title ? (
+        <ErrorState message={error} onRetry={() => navigate(0)} />
+      ) : (
+        <div className="td-card td-animate-in max-w-[880px] p-6 sm:p-8">
+          {error && (
+            <p role="alert" className="mb-5 rounded-xl border border-red-500/20 bg-red-500/5 p-3 text-[13px] text-red-400">
+              {error}
+            </p>
+          )}
+          <JobForm formData={formData} categories={categories} disabled={loading} onChange={handleChange} />
+          <div className="mt-7 flex flex-col gap-2 border-t border-white/10 pt-6 sm:flex-row sm:justify-between">
+            <button type="button" onClick={handleClose} disabled={loading} className="flex items-center justify-center gap-1.5 rounded-full border border-red-500/30 px-6 py-2.5 text-[13px] font-semibold text-red-400 transition hover:bg-red-500/10 disabled:opacity-40">
+              <Archive size={14} />
+              {loading ? 'Working…' : 'Close job'}
+            </button>
+            <div className="flex flex-col gap-2 sm:flex-row">
+              <button type="button" onClick={handleSaveDraft} disabled={loading} className="td-btn-ghost">
+                <Save size={14} />
+                {loading ? 'Saving…' : 'Save draft'}
+              </button>
+              <button type="button" onClick={handlePublish} disabled={loading} className="td-btn-primary">
+                <Send size={14} />
+                {loading ? 'Publishing…' : 'Publish'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </EmployerShell>
   );
 }
